@@ -5,4 +5,8 @@ router.get("/", (req, res) => {
     res.render("root")
 })
 
+router.get("/q", (req, res) => {
+    res.render("questions")
+})
+
 module.exports = router;

@@ -3,10 +3,39 @@
 }
 
 body {
-    font-size: 10px;
+    font-size: 20px;
     margin: 0 0 0 0;
     display: flex;
     flex-flow: column;
+}
+
+h1 {
+    font-size: 1.5rem;
+}
+
+.btn {
+    border: 1px solid #121457;
+    padding: 8px;
+    border-radius: 5px;
+    text-align: right;
+    width: fit-content;
+    float: right;
+    font-size: 1.5rem;
+    font-weight: bolder;
+}
+
+.btn-standard {
+    border: 1px solid #121457;
+    background-color: #118EDA;
+    color: #fff;
+}
+
+.btn-forward::after {
+    content: " >>"
+}
+
+.btn-backward::before {
+    content: "<< "
 }
 
 .center {
@@ -23,6 +52,8 @@ body {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: auto;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .footer {
@@ -50,7 +81,7 @@ body {
 .answers {
     width: 75px;
     float: left;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 input[type=radio] {
