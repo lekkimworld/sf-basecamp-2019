@@ -1,25 +1,23 @@
 const path = require("path");
 const express = require("express");
-const session = require("express-session");
-const RedisStore = require("connect-redis")(session);
-const uuid = require("uuid/v4");
+const exphbs = require("express-handlebars");
+const redis = require("./configure-redis.js")
 
 // create promisified redis client
-const redisClient = require("./configure-redis.js");
+const redisClient = redis.promisifiedClient;
 
-// create expres app
+// create expres app, add static content and configure sessions
 const app = express();
 app.use(express.static(path.join(__dirname, '..', 'public')));
-app.use(session({
-    "saveUninitialized": false,
-    "resave": false,
-    "secret": process.env.SESSION_SECRET || uuid(),
-    "store": new RedisStore({
-        "client": redisClient, 
-        "prefix": "session:"
-    })
-}));
+app.use(require("./configure-session.js")(redis.client));
 
+// configure handlebars for templating
+app.engine('handlebars', exphbs({defaultLayout: 'main'}))
+app.set('view engine', 'handlebars')
+
+// configure routes
+require("./configure-routes.js")(app);
 
 // listen
 app.listen(process.env.PORT || 8080);
+console.log(`Listening on port ${process.env.PORT || 8080}`)
