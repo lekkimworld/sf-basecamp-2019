@@ -8,46 +8,76 @@
         <div class="header center image-container">
             <img src="/images/trailblazer_treasure_hunt.png" class="image-scale-horizontal image-scale-vertical" />
         </div>
-        <div class="question" id="question1">
-            <div class="question_text"><ol start="1"><li>This is question 1 which is rather long so it wraps</li></ol></div>
-            <div class="answers">
-                <div class="answer">
-                    <input type="radio" name="question1" value="A"><label>A</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question1" value="B"><label>B</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question1" value="C"><label>C</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question1" value="D"><label>D</label>
-                </div>
-            </div>
-            <div class="image-container">
-                <img src="/images/floorplan.png" class="image-scale-vertical image-scale-horizontal" />
-            </div>
+        
+        <div class="body">
+
+
+
+<h1>Let us know who you are</h1>
+<div class="hidden m-vertical--medium" id="validation_msg">
+    Sorry! You seem to be missing filling in some fields...
+</div>
+<input type="text" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+<input type="text" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+<input type="text" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+<div class="m-top--medium">
+    At Salesforce Trust is our #1 value and we respect your choice not to receive information from 
+    us. By checking the below box you opt into receiving information about upcoming local 
+    Trailblazer events. 
+</div>
+<div class="m-top--medium">
+    <input type="checkbox" id="optin" name="optin"><label for="optin">
+        Yes - I want to hear more!
+    </label>
+</div>
+<div class="clear-fix m-top--medium">
+    <button class="btn btn-forward float-right" id="btn-submit">Submit</button>
+</div>
+
+<script>
+    document.querySelector("#btn-submit").addEventListener("click", (event) => {
+        // we handle the event
+        event.preventDefault = true;
+        
+        // vaildate info
+        const getElem = id => document.querySelector(id);
+        const validateText = (id) => {
+            const elem = getElem(id);
+            const value = elem.value;
+            if (!value || !value.length) {
+                elem.classList.add("required");
+                return false;
+            } else {
+                elem.classList.remove("required");
+                return true;
+            }
+        }
+        const validateEmail = (id) => {
+            const elem = getElem(id);
+            const value = elem.value;
+            if (value && value.length && value.match(/^[-_a-z0-9]+(\.[-_a-z0-9]+)*@[-a-z0-9]+(\.[-_a-z0-9]+)*\.[a-z]{2,}$/i)) {
+                elem.classList.remove("required");
+                return true;
+            } else {
+                elem.classList.add("required");
+                return false;
+            }
+        }
+        const firstname = validateText("#firstname");
+        const lastname = validateText("#lastname");
+        const email = validateEmail("#email");
+        if (firstname & lastname && email) {
+            document.getElementById("validation_msg").classList.remove("visible");
+            document.getElementById("validation_msg").classList.add("hidden");
+        } else {
+            document.getElementById("validation_msg").classList.remove("hidden");
+            document.getElementById("validation_msg").classList.add("visible");
+        }
+    })
+</script>
+
         </div>
-        <div class="question" id="question2">
-            <div class="question_text"><ol start="2"><li>This is question 2 which is rather long so it wraps</li></ol></div>
-            <div class="answers">
-                <div class="answer">
-                    <input type="radio" name="question2" value="A"><label>A</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question2" value="B"><label>B</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question2" value="C"><label>C</label>
-                </div>
-                <div class="answer">
-                    <input type="radio" name="question2" value="D"><label>D</label>
-                </div>
-            </div>
-            <div class="image-container">
-                <img src="/images/floorplan.png" class="image-scale-vertical image-scale-horizontal" />
-            </div>
-        </div>
+
         <div class="clear-fix footer image-container">
             <img src="/images/footer.png" class="image-scale-vertical" />
         </div>
