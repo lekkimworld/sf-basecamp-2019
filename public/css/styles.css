@@ -77,6 +77,8 @@ pre {
 
 .footer {
     margin-top: 15px;
+    background-image: url("/images/footer_repeat.png");
+    background-repeat: repeat-x;
 }
 
 .clear-fix {
