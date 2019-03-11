@@ -18,6 +18,11 @@ app.set('view engine', 'handlebars')
 // configure routes
 require("./configure-routes.js")(app);
 
+// add error handler
+app.use((err, req, res, next) => {
+    return res.render("error", {"error": err.message});
+})
+
 // listen
 app.listen(process.env.PORT || 8080);
 console.log(`Listening on port ${process.env.PORT || 8080}`)

@@ -13,13 +13,18 @@ h1 {
     font-size: 1.5rem;
 }
 
+pre {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.8rem;
+    white-space: pre-wrap;
+}
+
 .btn {
     border: 1px solid #121457;
     padding: 8px;
     border-radius: 5px;
     text-align: right;
     width: fit-content;
-    float: right;
     font-size: 1.5rem;
     font-weight: bolder;
 }
@@ -28,6 +33,20 @@ h1 {
     border: 1px solid #121457;
     background-color: #118EDA;
     color: #fff;
+}
+
+.btn-error {
+    border: 1px solid #121457;
+    background-color: #ED7D31;
+    color: #000;
+}
+
+.float-right {
+    float: right;
+}
+
+.float-left {
+    float: left;
 }
 
 .btn-forward::after {
