@@ -27,9 +27,15 @@ router.get("/?*?", (req, res) => {
     // figure out where we are in the flow
     let step = !req.session || !req.session.step ? 0 : req.session.step;
 
-    // get action
-    const action = req.params[0];
-    if (!action || action === "next") {
+    // get action and decide on context and action
+    const parts = req.params[0].split("/");
+    const ctx = parts.length >= 2 ? `/${parts[0]}` : "/";
+    const action = parts.length >= 2 ? parts[1] : parts[0];
+
+    // inspect action
+    if (!action || action === "start") {
+        step = 1;
+    } else if (action === "next") {
         step++;
     } else if (action === "prev") {
         step--;
@@ -55,7 +61,13 @@ router.get("/?*?", (req, res) => {
     // handle go to questions step
     if (step === 3) {
         req.session.step = 3;
-        return res.render("questions");
+        // get questionnaire
+        return redisClient.get(`questionnaire:${ctx}`).then(data => {
+            return JSON.parse(data);
+        }).then(questionnaire => {
+            // render template using questions in sub-key as it otherwised rendered double...
+            res.render("questions", questionnaire);
+        })
     }
     
     // coming here is an error

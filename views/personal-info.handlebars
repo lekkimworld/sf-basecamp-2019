@@ -59,5 +59,9 @@
             document.getElementById("validation_msg").classList.remove("hidden");
             document.getElementById("validation_msg").classList.add("visible");
         }
+
+        const parts = window.location.pathname.split("/");
+        const ctx = parts.length >= 3 ? parts[1] : "";
+        window.location.href = `/${ctx}/next`;
     })
 </script>

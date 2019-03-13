@@ -2,6 +2,8 @@ const fetch = require("node-fetch");
 const FormData = require("form-data");
 const redisClient = require("./configure-redis.js").promisifiedClient;
 
+const VERSION_STATUS = "Active";
+
 module.exports = pool => {
     const formdata = new FormData();
     formdata.append("grant_type", "password");
@@ -22,7 +24,7 @@ module.exports = pool => {
         // query for questionnaires
         return Promise.all([
             Promise.resolve(ctx),
-            pool.query(`select questionnaire.context__c ctx, version.sfid versionid from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='Active'`)
+            pool.query(`select questionnaire.context__c ctx, version.sfid versionid from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='${VERSION_STATUS}'`)
         ])        
     }).then(data => {
         const ctx = data[0];
@@ -110,7 +112,7 @@ module.exports = pool => {
             // find question and add image data
             Object.values(ctx.questionnaires).forEach(questionnaire => {
                 const q = questionnaire.questions.filter(q => q.id === data[i].id);
-                if (q) q[0].image = `data:image/png;base64,${data[i].base64}`;
+                if (q && q.length) q[0].image = `data:image/png;base64,${data[i].base64}`;
             })
         }
 
