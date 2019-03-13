@@ -69,6 +69,12 @@ router.get("/?*?", (req, res) => {
             res.render("questions", questionnaire);
         })
     }
+
+    // handle final step
+    if (step === 4) {
+        req.session.step = 4;
+        return res.render("final");
+    }
     
     // coming here is an error
     res.render("error", {"error": "You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!"});

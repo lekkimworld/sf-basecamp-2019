@@ -7,7 +7,11 @@ window.addEventListener("load", () => {
                 const parts = window.location.pathname.split("/");
                 const ctx = parts.length >= 3 ? `${parts[1]}` : "";
                 console.log(`Path <${window.location.pathname}> and context <${ctx}> and href <${href}>`)
-                window.location.href = `/${ctx}${href}`;
+                if (!ctx) {
+                    window.location.href = `${href}`;
+                } else {
+                    window.location.href = `/${ctx}${href}`;
+                }
             })
         }
     });    
