@@ -1,5 +1,29 @@
 const express = require("express");
 const router = express.Router();
+const redisClient = require("../configure-redis.js").promisifiedClient;
+
+require("../configure-questionnaire-cache.js");
+
+router.use((req, res, next) => {
+    // ensure we have a session
+    if (!req.session) {
+        return next(Error('Unable to get session - probably unable to connect to Redis'));
+    } else {
+        return next();
+    }
+})
+
+router.get("/q", (req, res) => {
+    // get questionnaire
+    redisClient.get("questionnaire:/").then(data => {
+        return JSON.parse(data);
+    }).then(questionnaire => {
+        // render template using questions in sub-key as it otherwised rendered double...
+        res.render("questions", questionnaire);
+    })
+    
+    
+})
 
 router.get("/?*?", (req, res) => {
     // figure out where we are in the flow
@@ -38,10 +62,6 @@ router.get("/?*?", (req, res) => {
     
     // coming here is an error
     res.render("error", {"error": "You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!"});
-})
-
-router.get("/q", (req, res) => {
-    res.render("questions")
 })
 
 module.exports = router;

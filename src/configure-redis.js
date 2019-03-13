@@ -14,7 +14,8 @@ const promisifiedClient = (function() {
         'setex': promisify(client.setex).bind(client),
         'keys': promisify(client.keys).bind(client),
         'mget': promisify(client.mget).bind(client),
-        'expire': promisify(client.expire).bind(client)
+        'expire': promisify(client.expire).bind(client),
+        'end': promisify(client.end).bind(client)
     }
 })();
 

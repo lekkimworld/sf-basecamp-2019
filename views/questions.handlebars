@@ -1,40 +1,15 @@
-<div class="question" id="question1">
-    <div class="question_text"><ol start="1"><li>This is question 1 which is rather long so it wraps</li></ol></div>
+{{#each this.questions}}
+<div class="question" id="question{{this.index}}">
+    <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
     <div class="answers">
+        {{#each this.answers}}
         <div class="answer">
-            <input type="radio" name="question1" value="A"><label>A</label>
+            <input type="radio" name="question{{../index}}" value="{{this.text}}"><label>{{this.text}}</label>
         </div>
-        <div class="answer">
-            <input type="radio" name="question1" value="B"><label>B</label>
-        </div>
-        <div class="answer">
-            <input type="radio" name="question1" value="C"><label>C</label>
-        </div>
-        <div class="answer">
-            <input type="radio" name="question1" value="D"><label>D</label>
-        </div>
+        {{/each}}
     </div>
     <div class="image-container">
-        <img src="/images/floorplan.png" class="image-scale-vertical image-scale-horizontal" />
+        <img src="{{this.image}}" class="image-scale-vertical image-scale-horizontal" />
     </div>
 </div>
-<div class="question" id="question2">
-    <div class="question_text"><ol start="2"><li>This is question 2 which is rather long so it wraps</li></ol></div>
-    <div class="answers">
-        <div class="answer">
-            <input type="radio" name="question2" value="A"><label>A</label>
-        </div>
-        <div class="answer">
-            <input type="radio" name="question2" value="B"><label>B</label>
-        </div>
-        <div class="answer">
-            <input type="radio" name="question2" value="C"><label>C</label>
-        </div>
-        <div class="answer">
-            <input type="radio" name="question2" value="D"><label>D</label>
-        </div>
-    </div>
-    <div class="image-container">
-        <img src="/images/floorplan.png" class="image-scale-vertical image-scale-horizontal" />
-    </div>
-</div>
+{{/each}}
