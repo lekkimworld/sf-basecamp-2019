@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
 
-require("../configure-questionnaire-cache.js");
-
 router.use((req, res, next) => {
     // ensure we have a session
     if (!req.session) {
