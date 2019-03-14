@@ -118,7 +118,7 @@ router.get("/?*?", (req, res) => {
         // send into queue
         
 
-        // delete data from session
+        // delete state data for context from session
         delete req.session[ctx];
 
         // return thank you page
@@ -126,7 +126,7 @@ router.get("/?*?", (req, res) => {
     }
     
     // coming here is an error
-    res.render("error", {"error": "You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!"});
+    throw Error("You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!");
 })
 
 module.exports = router;

@@ -24,7 +24,7 @@ module.exports = pool => {
         // query for questionnaires
         return Promise.all([
             Promise.resolve(ctx),
-            pool.query(`select questionnaire.context__c ctx, version.sfid versionid from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='${VERSION_STATUS}'`)
+            pool.query(`select questionnaire.context__c ctx, questionnaire.sfid questionnaireid, version.sfid versionid from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='${VERSION_STATUS}'`)
         ])        
     }).then(data => {
         const ctx = data[0];
@@ -32,6 +32,7 @@ module.exports = pool => {
         rs.rows.forEach(row => {
             ctx.questionnaires[row.ctx] = {
                 "context": row.ctx,
+                "questionnaireid": row.questionnaireid,
                 "versionid": row.versionid
             }
         })
