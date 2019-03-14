@@ -2,9 +2,9 @@
 <div class="hidden m-vertical--medium" id="validation_msg">
     Sorry! You seem to be missing filling in some fields...
 </div>
-<input type="text" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
-<input type="text" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
-<input type="text" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+<input type="text" value="{{this.nameData.firstname}}" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" value="{{this.nameData.lastname}}" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" value="{{this.nameData.email}}" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 <div class="m-top--medium">
     At Salesforce Trust is our #1 value and we respect your choice not to receive information from 
     us. By checking the below box you opt into receiving information about upcoming local 
@@ -16,7 +16,7 @@
     </label>
 </div>
 <div class="clear-fix m-top--medium">
-    <button class="btn btn-backward float-left" id="btn-previous" href="/prev">Back</button>
+    <button class="btn btn-backward float-left" id="btn-previous" action="prev">Back</button>
     <button class="btn btn-standard btn-forward float-right" id="btn-submit">Submit</button>
 </div>
 
@@ -53,19 +53,18 @@
         const lastname = validateText("#lastname");
         const email = validateEmail("#email");
         if (firstname & lastname && email) {
+            // we validated
             document.getElementById("validation_msg").classList.remove("visible");
             document.getElementById("validation_msg").classList.add("hidden");
+
+            postStateMessage("next", {
+                "firstname": getElem("#firstname").value, 
+                "lastname": getElem("#lastname").value, 
+                "email": getElem("#email").value
+            })
         } else {
             document.getElementById("validation_msg").classList.remove("hidden");
             document.getElementById("validation_msg").classList.add("visible");
-        }
-
-        const parts = window.location.pathname.split("/");
-        const ctx = parts.length >= 3 ? parts[1] : "";
-        if (!ctx) {
-            window.location.href = `/next`;
-        } else {
-            window.location.href = `/${ctx}/next`;
         }
     })
 </script>

@@ -28,7 +28,14 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.use(require("./configure-session.js")(redis.client));
 
 // configure handlebars for templating
-app.engine('handlebars', exphbs({defaultLayout: 'main'}))
+app.engine("handlebars", exphbs({
+    "defaultLayout": "main",
+    "helpers": {
+        "json": function (context) {
+            return JSON.stringify(context);
+        }
+    }
+}))
 app.set('view engine', 'handlebars')
 
 // configure routes

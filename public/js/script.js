@@ -1,17 +1,28 @@
+const postStateMessage = (action, data) => {
+    // create payload
+    const payload = Object.assign({
+        action
+    }, data);
+
+    // post to update state
+    fetch(document.location.href, {
+        "method": "post", 
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": JSON.stringify(payload)
+    }).then(res => res.json()).then(data => {
+        window.location.reload();
+    })
+}
 window.addEventListener("load", () => {
     document.querySelectorAll("button.btn").forEach(node => {
-        const href = node.getAttribute("href");
-        if (href) {
+        const action = node.getAttribute("action");
+        if (action) {
             node.addEventListener("click", (event) => {
+                // prevent default event
                 event.preventDefault = true;
-                const parts = window.location.pathname.split("/");
-                const ctx = parts.length >= 3 ? `${parts[1]}` : "";
-                console.log(`Path <${window.location.pathname}> and context <${ctx}> and href <${href}>`)
-                if (!ctx) {
-                    window.location.href = `${href}`;
-                } else {
-                    window.location.href = `/${ctx}${href}`;
-                }
+                postStateMessage(action);
             })
         }
     });    

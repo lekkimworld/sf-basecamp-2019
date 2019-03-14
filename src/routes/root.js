@@ -1,6 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
+const bodyParser = require("body-parser");
+
+/**
+ * Return the context in use.
+ * @param {String} req 
+ */
+const getContextForRequest = req => req.params[0] ? `/${req.params[0].split("/")[0]}` : "/";
+
+const getStateForContext = (req) => {
+    const ctx = getContextForRequest(req);
+    if (!req.session[ctx]) req.session[ctx] = {};
+    return req.session[ctx];
+}
+
+// use JSON for POST bodies
+router.use(bodyParser.json());
 
 router.use((req, res, next) => {
     // ensure we have a session
@@ -11,69 +27,90 @@ router.use((req, res, next) => {
     }
 })
 
-router.get("/q", (req, res) => {
-    // get questionnaire
-    redisClient.get("questionnaire:/").then(data => {
-        return JSON.parse(data);
-    }).then(questionnaire => {
-        // render template using questions in sub-key as it otherwised rendered double...
-        res.render("questions", questionnaire);
-    })
-    
-    
-})
+/**
+ * We use the POST route to receive data from the UI and modify 
+ * the state.
+ */
+router.post("/?*?", (req, res) => {
+    // decide on context
+    const ctx = getContextForRequest(req);
+    const state = getStateForContext(req);
 
-router.get("/?*?", (req, res) => {
-    // figure out where we are in the flow
-    let step = !req.session || !req.session.step ? 0 : req.session.step;
+    // get payload
+    const payload = req.body;
 
-    // get action and decide on context and action
-    const parts = req.params[0].split("/");
-    const ctx = parts.length >= 2 ? `/${parts[0]}` : "/";
-    const action = parts.length >= 2 ? parts[1] : parts[0];
-
-    // inspect action
-    if (!action || action === "start") {
-        step = 1;
-    } else if (action === "next") {
+    // figure out which step we're at and store back in session
+    let step = state.step || 0;
+    if (payload.action === "next") {
         step++;
-    } else if (action === "prev") {
+    } else if (payload.action === "prev") {
         step--;
         if (step < 0) step = 1;
-    } else if (action === "restart") {
-        step = 1;
-    } else {
-        throw Error(`Unknown action (${action}) received...`)
+    }
+    state.step = step;
+    
+    // see if there is personal info data in the payload
+    if (payload.firstname || payload.lastname || payload.email) {
+        req.session.nameData = {
+            "firstname": payload.firstname,
+            "lastname": payload.lastname,
+            "email": payload.email
+        }
     }
 
+    // return
+    res.type("json");
+    res.send({
+        "status": "ok"
+    })
+})
+
+/**
+ * We use the GET route to return the rendered UI for the user 
+ * based on the state we have for the user.
+ */
+router.get("/?*?", (req, res) => {
+    // get context and state
+    const ctx = getContextForRequest(req);
+    const state = getStateForContext(req);
+
+    // figure out where we are in the flow
+    let step = state.step || 0;
+
+    const templateCtx = {
+        "ctx": {
+            "ctx": ctx,
+            "state": state
+        }
+    }
+    templateCtx.ctx.stringify = JSON.stringify(templateCtx.ctx);
+
     // handle welcome step
-    if (step === 1) {
-        req.session.step = 1;
-        return res.render("root");
+    if (step === 0) {
+        return res.render("root", templateCtx);
     }
 
     // handle the personal info step
-    if (step === 2) {
-        req.session.step = 2;
-        return res.render("personal-info");
+    if (step === 1) {
+        if (req.session.nameData) templateCtx.nameData = req.session.nameData;
+        return res.render("personal-info", templateCtx);
     }
 
     // handle go to questions step
-    if (step === 3) {
-        req.session.step = 3;
+    if (step === 2) {
         // get questionnaire
         return redisClient.get(`questionnaire:${ctx}`).then(data => {
             return JSON.parse(data);
         }).then(questionnaire => {
             // render template using questions in sub-key as it otherwised rendered double...
-            res.render("questions", questionnaire);
+            templateCtx.questions = questionnaire.questions;
+            res.render("questions", templateCtx);
         })
     }
 
     // handle final step
-    if (step === 4) {
-        req.session.step = 4;
-        return res.render("final");
+    if (step === 3) {
+        return res.render("final", templateCtx);
     }
     
     // coming here is an error
