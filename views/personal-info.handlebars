@@ -11,7 +11,12 @@
     Trailblazer events. 
 </div>
 <div class="m-top--medium">
-    <input type="checkbox" id="optin" name="optin"><label for="optin">
+    {{#if this.nameData.optin}}
+    <input type="checkbox" id="optin" name="optin" checked>
+    {{else}}
+    <input type="checkbox" id="optin" name="optin">
+    {{/if}}
+    <label for="optin">
         Yes - I want to hear more!
     </label>
 </div>
@@ -60,11 +65,14 @@
             postStateMessage("next", {
                 "firstname": getElem("#firstname").value, 
                 "lastname": getElem("#lastname").value, 
-                "email": getElem("#email").value
+                "email": getElem("#email").value,
+                "optin": getElem("#optin").checked
             })
         } else {
+            // show error message and scroll to top to ensure user can see it
             document.getElementById("validation_msg").classList.remove("hidden");
             document.getElementById("validation_msg").classList.add("visible");
+            window.scrollTo(0,0);
         }
     })
 </script>

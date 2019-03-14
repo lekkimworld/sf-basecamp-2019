@@ -1,3 +1,6 @@
+<div class="hidden m-vertical--medium" id="validation_msg">
+    Sorry! You seem to not have answered all questions...
+</div>
 {{#each this.questions}}
 <div class="question" id="question{{this.index}}">
     <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
@@ -15,5 +18,37 @@
 {{/each}}
 <div class="clear-fix m-top--medium">
     <button class="btn btn-backward float-left" id="btn-previous" action="prev">Back</button>
-    <button class="btn btn-standard btn-forward float-right" id="btn-submit" action="next">Submit</button>
+    <button class="btn btn-standard btn-forward float-right" id="btn-submit">Submit</button>
 </div>
+
+<script>
+    document.querySelector("#btn-submit").addEventListener("click", (event) => {
+        // we handle the event
+        event.preventDefault = true;
+        
+        // ensure all questions have been answered
+        const questionIds = []; 
+        document.querySelectorAll(".question").forEach(n => questionIds.push(n.id));
+        const answers = questionIds.reduce((prev, id) => {
+             document.querySelector(`#${id}`).querySelectorAll("input[type=radio]").forEach(node => {
+                 if (node.checked) {
+                     prev.push({
+                        "name": node.name,
+                        "value": node.value
+                     })
+                }
+             })
+             return prev;
+        }, []);
+        if (answers.length === questionIds.length) {
+            postStateMessage("next", {
+                "answers": answers
+            })
+        } else {
+            // show error message and scroll to top to ensure user can see it
+            document.getElementById("validation_msg").classList.remove("hidden");
+            document.getElementById("validation_msg").classList.add("visible");
+            window.scrollTo(0,0);
+        }
+    })
+</script>

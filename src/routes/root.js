@@ -51,11 +51,12 @@ router.post("/?*?", (req, res) => {
     
     // see if there is personal info data in the payload
     if (payload.firstname || payload.lastname || payload.email) {
-        req.session.nameData = {
-            "firstname": payload.firstname,
-            "lastname": payload.lastname,
-            "email": payload.email
-        }
+        req.session.nameData = payload;
+    }
+
+    // see if there are answers in the payload
+    if (payload.answers) {
+        state.answers = payload.answers;
     }
 
     // return
@@ -110,6 +111,17 @@ router.get("/?*?", (req, res) => {
 
     // handle final step
     if (step === 3) {
+        // get data from session / state
+        const nameData = req.session.nameData;
+        const answers = state.answers;
+
+        // send into queue
+        
+
+        // delete data from session
+        delete req.session[ctx];
+
+        // return thank you page
         return res.render("final", templateCtx);
     }
     
