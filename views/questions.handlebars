@@ -2,11 +2,11 @@
     Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
-<div class="question" id="question{{this.index}}">
+<div class="question" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
     <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
     <div class="answers">
         {{#each this.answers}}
-        <div class="answer">
+        <div class="answer" id="{{this.answerid}}">
             <input type="radio" name="question{{../index}}" value="{{this.text}}"><label>{{this.text}}</label>
         </div>
         {{/each}}
