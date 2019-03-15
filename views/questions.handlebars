@@ -2,7 +2,7 @@
     Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
-<div class="question" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
+<div class="question clear-fix" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
     <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
     <div class="answers">
         {{#each this.answers}}
@@ -16,7 +16,7 @@
     </div>
 </div>
 {{/each}}
-<div class="clear-fix m-top--medium">
+<div class="clear-fix m-top--large">
     <button class="btn btn-backward float-left" id="btn-previous" action="prev">Back</button>
     <button class="btn btn-standard btn-forward float-right" id="btn-submit">Submit</button>
 </div>

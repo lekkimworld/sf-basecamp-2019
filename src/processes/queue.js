@@ -35,7 +35,7 @@ queue.subscribe((msg, callback) => {
         })
         
         console.log('-------');
-        console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optint})`);
+        console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optin})`);
         questionnaire.questions.forEach(question => {
             console.log(`${question.index}. ${question.text}, correct: ${question.correct}`);
         })
