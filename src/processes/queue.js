@@ -6,7 +6,6 @@ const redisClient = require("../configure-redis.js").promisifiedClient;
 
 queue.subscribe((msg, callback) => {
     const payload = JSON.parse(msg.toString());
-    callback();
     const answers = payload.answers.reduce((prev, answer) => {
         prev[answer.answerid] = answer;
         return prev;
@@ -35,10 +34,15 @@ queue.subscribe((msg, callback) => {
             question.answerid = providedAnswer ? providedAnswer.answerid : undefined;
         })
         
+        console.log('-------');
+        console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optint})`);
         questionnaire.questions.forEach(question => {
             console.log(`${question.index}. ${question.text}, correct: ${question.correct}`);
         })
-        
+        console.log('-------');
+
+        // callback and acknowledge the processing of the msg
+        callback();
     })
 })
 
