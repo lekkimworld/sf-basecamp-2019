@@ -178,6 +178,18 @@ input[type=text].required {
     margin-top: 30px;
 }
 
+.m-bottom--small {
+    margin-bottom: 10px;
+}
+
+.m-bottom--medium {
+    margin-bottom: 20px;
+}
+
+.m-bottom--large {
+    margin-bottom: 30px;
+}
+
 .m-vertical--small {
     margin-top: 10px;
     margin-bottom: 10px;

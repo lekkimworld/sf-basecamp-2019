@@ -1,8 +1,8 @@
-<div class="hidden m-vertical--medium" id="validation_msg">
+<div class="hidden m-top--medium m-bottom--small" id="validation_msg">
     Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
-<div class="question clear-fix" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
+<div class="question m-top--medium clear-fix" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
     <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
     <div class="answers">
         {{#each this.answers}}
