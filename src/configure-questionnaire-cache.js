@@ -39,7 +39,7 @@ module.exports = pool => {
         const promises = [
             Promise.resolve(ctx)
         ].concat(rs.rows.map(row => {
-            return pool.query(`select text__c text, sfid, sorting__c sorting, image__c image, answer__c anwserid from salesforce.basecamp_question__c where version__c='${row.versionid}' order by sorting__c asc;`)
+            return pool.query(`select text__c as text, sfid, sorting__c sorting, image__c image, answer__c anwserid from salesforce.basecamp_question__c where version__c='${row.versionid}' order by sorting__c asc;`)
         }))
         return Promise.all(promises);
 
@@ -66,7 +66,7 @@ module.exports = pool => {
         }
         return Promise.all([
             Promise.resolve(ctx),
-            pool.query(`select sfid answerid, question__c questionid, text__c text, sorting__c sorting from salesforce.basecamp_answer__c where question__c in ('${questionIds.join(`','`)}') order by questionid, sorting asc;`)
+            pool.query(`select sfid answerid, question__c questionid, text__c as text, sorting__c sorting from salesforce.basecamp_answer__c where question__c in ('${questionIds.join(`','`)}') order by questionid, sorting asc;`)
         ]);
 
     }).then(data => {
