@@ -1,2 +1,2 @@
-web: npm startWeb
-queue: npm startQueue
+web: node src/processes/web.js
+queue: node src/processes/queue.js
