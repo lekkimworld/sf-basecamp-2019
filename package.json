@@ -4,10 +4,12 @@
   "description": "Trailblazer Treasure Hunt app for Salesforce Basecamp 2019",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "startWeb": "node src/processes/web.js",
+    "startQueue": "node src/processes/queue.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "amqplib": "^0.5.3",
     "body-parser": "^1.18.3",
     "connect-redis": "^3.4.0",
     "dotenv": "^6.2.0",

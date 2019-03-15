@@ -2,11 +2,11 @@
     Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
-<div class="question" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
+<div class="question" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
     <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
     <div class="answers">
         {{#each this.answers}}
-        <div class="answer" id="{{this.answerid}}">
+        <div class="answer" answerid="{{this.answerid}}">
             <input type="radio" name="question{{../index}}" value="{{this.text}}"><label>{{this.text}}</label>
         </div>
         {{/each}}
@@ -33,6 +33,8 @@
              document.querySelector(`#${id}`).querySelectorAll("input[type=radio]").forEach(node => {
                  if (node.checked) {
                      prev.push({
+                        "answerid": node.parentNode.getAttribute("answerid"),
+                        "questionid": node.parentNode.parentNode.parentNode.getAttribute("questionid"),
                         "name": node.name,
                         "value": node.value
                      })

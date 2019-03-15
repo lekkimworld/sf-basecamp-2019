@@ -7,8 +7,14 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/src/index.js"
+            "name": "Web",
+            "program": "${workspaceFolder}/src/processes/web.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Queue",
+            "program": "${workspaceFolder}/src/processes/queue.js"
         },
         {
             "type": "node",

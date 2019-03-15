@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const bodyParser = require("body-parser");
+const queue = require("../configure-queue.js");
 
 /**
  * Return the context in use.
@@ -111,12 +112,17 @@ router.get("/?*?", (req, res) => {
 
     // handle final step
     if (step === 3) {
-        // get data from session / state
+        // get data from session / state and create payload
         const nameData = req.session.nameData;
         const answers = state.answers;
+        const payload = {
+            ctx,
+            nameData,
+            answers
+        }
 
         // send into queue
-        
+        queue.publish(payload);
 
         // delete state data for context from session
         delete req.session[ctx];
