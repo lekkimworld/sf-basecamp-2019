@@ -35,6 +35,9 @@ queue.subscribe((msg, callback) => {
             question.answerid = providedAnswer ? providedAnswer.answerid : undefined;
         })
         
+        questionnaire.questions.forEach(question => {
+            console.log(`${question.index}. ${question.text}, correct: ${question.correct}`);
+        })
         
     })
 })
