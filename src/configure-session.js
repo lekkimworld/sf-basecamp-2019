@@ -9,7 +9,8 @@ module.exports = (redisClient) => {
         "secret": process.env.SESSION_SECRET || uuid(),
         "store": new RedisStore({
             "client": redisClient,
-            "prefix": "session:"
+            "prefix": "session:",
+            "ttl": 6 * 60 * 60 // 5 hours
         })
     })
 }

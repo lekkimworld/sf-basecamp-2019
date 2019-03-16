@@ -53,6 +53,7 @@ router.post("/?*?", (req, res) => {
     // see if there is personal info data in the payload
     if (payload.firstname || payload.lastname || payload.email) {
         req.session.nameData = payload;
+        if (req.session.nameData.email) req.session.nameData.email = req.session.nameData.email.toLowerCase(); 
     }
 
     // see if there are answers in the payload
