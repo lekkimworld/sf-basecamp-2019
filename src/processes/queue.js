@@ -7,6 +7,7 @@ const uuid = require('uuid/v4');
 
 queue.subscribe((msg, callback) => {
     const payload = JSON.parse(msg.toString());
+    console.log(JSON.stringify(payload));
     const answers = payload.answers.reduce((prev, answer) => {
         prev[answer.answerid] = answer;
         return prev;
@@ -15,6 +16,7 @@ queue.subscribe((msg, callback) => {
     // get the questionnaire from redis
     redisClient.get(`questionnaire:${payload.ctx}`).then(data => {
         const questionnaire = JSON.parse(data);
+        console.log(JSON.stringify(questionnaire));
 
         // figure out what questions are correct        
         questionnaire.questions.forEach(question => {
@@ -90,7 +92,7 @@ queue.subscribe((msg, callback) => {
             callback();
 
         }).catch(err => {
-            console.log(`Cauht error (${err.message}) so rolling tx back`);
+            console.log(`Caught error (${err.message}) so rolling tx back`);
             return pool.query("ROLLBACK");
         })
     })
