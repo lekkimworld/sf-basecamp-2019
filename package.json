@@ -17,6 +17,7 @@
     "form-data": "^2.3.3",
     "node-fetch": "^2.3.0",
     "pg": "^7.8.2",
+    "promise-all-sequential": "^1.0.0",
     "redis": "^2.8.0",
     "uuid": "^3.3.2"
   },

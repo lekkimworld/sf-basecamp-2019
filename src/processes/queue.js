@@ -4,6 +4,7 @@ const queue = require("../configure-queue.js");
 const pool = require("../configure-db.js");
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const uuid = require('uuid/v4');
+const promiseAllSequential = require("promise-all-sequential");
 
 queue.subscribe((msg, callback) => {
     const payload = JSON.parse(msg.toString());
@@ -49,9 +50,6 @@ queue.subscribe((msg, callback) => {
         const responseUuid = uuid();
 
         pool.query("BEGIN").then(rs => {
-            return pool.query("SET CONSTRAINTS salesforce.basecamp_questionnaire_response__c DEFERRED");
-
-        }).then(rs => {
             // query for account
             return pool.query(`select sfid, external_id__c 
                 from salesforce.account 
@@ -88,8 +86,8 @@ queue.subscribe((msg, callback) => {
                     ('${responseUuid}', '${q.answerid}', '${q.id}', '${uuid()}', ${q.correct ? 'TRUE' : 'FALSE'});`);
             });
             console.log(`Converted ${questionnaire.questions.length} questions into ${promises.length} promises`);
-            return Promise.all(promises);
-
+            return promiseAllSequential(promises);
+            
         }).then(rs => {
             // commit
             return pool.query("COMMIT");
