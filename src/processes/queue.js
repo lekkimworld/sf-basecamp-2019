@@ -49,6 +49,9 @@ queue.subscribe((msg, callback) => {
         const responseUuid = uuid();
 
         pool.query("BEGIN").then(rs => {
+            return pool.query("SET CONSTRAINTS salesforce.basecamp_questionnaire_response__c DEFERRED");
+
+        }).then(rs => {
             // query for account
             return pool.query(`select sfid, external_id__c 
                 from salesforce.account 
