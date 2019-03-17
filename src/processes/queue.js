@@ -41,7 +41,7 @@ queue.subscribe((msg, callback) => {
         console.log('-------');
         console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optin})`);
         questionnaire.questions.forEach(question => {
-            console.log(`${question.index}. ${question.text}, correct: ${question.correct}`);
+            console.log(`${question.index}. ${question.text}, correct: ${question.correct} (questionid <${question.questionid}>, answerid <${question.answerid}>)`);
         })
         console.log('-------');
 
@@ -76,7 +76,7 @@ queue.subscribe((msg, callback) => {
 
         }).then(rs => {
             return pool.query("COMMIT");
-            
+
         }).then(rs => {
             return pool.query("BEGIN");
         
