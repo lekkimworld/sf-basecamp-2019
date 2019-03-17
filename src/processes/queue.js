@@ -77,19 +77,15 @@ queue.subscribe((msg, callback) => {
                 ('${questionnaire.questionnaireid}', '${questionnaire.versionid}', '${payload.nameData.email}', '${responseUuid}');`);
 
         }).then(rs => {
-            return pool.query("COMMIT");
-
-        }).then(rs => {
-            return pool.query("BEGIN");
-        
-        }).then(rs => {
             // create a response answer per answer
-            return Promise.all(questionnaire.questions.map(q => {
+            const promises = questionnaire.questions.map(q => {
                 return pool.query(`INSERT INTO salesforce.basecamp_questionnaire_answer__c 
                     (questionnaire_response__r__external_id__c, answer__c, question__c, external_id__c, correct__c) 
                     VALUES 
                     ('${responseUuid}', '${q.answerid}', '${q.id}', '${uuid()}', ${q.correct ? 'TRUE' : 'FALSE'});`);
-            }));
+            });
+            console.log(`Converted ${questionnaire.questions.length} questions into ${promises.length} promises`);
+            return Promise.all(promises);
 
         }).then(rs => {
             // commit
