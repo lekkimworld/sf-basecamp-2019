@@ -41,7 +41,7 @@ queue.subscribe((msg, callback) => {
         console.log('-------');
         console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optin})`);
         questionnaire.questions.forEach(question => {
-            console.log(`${question.index}. ${question.text}, correct: ${question.correct} (questionid <${question.questionid}>, answerid <${question.answerid}>)`);
+            console.log(`${question.index}. ${question.text}, correct: ${question.correct} (questionid <${question.id}>, answerid <${question.answerid}>)`);
         })
         console.log('-------');
 
@@ -55,16 +55,18 @@ queue.subscribe((msg, callback) => {
                 where external_id__c='${payload.nameData.email}';`);
 
         }).then(rs => {
+            // we're setting opt-out and have opt-in so reverse 
+            const optout = payload.nameData.optin ? 'FALSE' : 'TRUE';
             if (rs.rows.length) {
                 // found existing account so update it
-                return pool.query(`UPDATE salesforce.Account SET firstname='${payload.nameData.firstname}', lastname='${payload.nameData.lastname}', PersonHasOptedOutOfEmail='${payload.nameData.optin ? 'TRUE' : 'FALSE'}' 
+                return pool.query(`UPDATE salesforce.Account SET firstname='${payload.nameData.firstname}', lastname='${payload.nameData.lastname}', PersonHasOptedOutOfEmail=${optout} 
                     WHERE PersonEmail='${payload.nameData.email}'`);
             } else {
                 // no existing account so insert
                 return pool.query(`INSERT INTO salesforce.Account 
                     (External_ID__c, PersonEmail, PersonHasOptedOutOfEmail, firstname, lastname, recordtypeid) 
                     VALUES 
-                    ('${payload.nameData.email}', '${payload.nameData.email}', '${payload.nameData.optin ? 'TRUE' : 'FALSE'}', '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
+                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
             }
 
         }).then(rs => {
@@ -86,7 +88,7 @@ queue.subscribe((msg, callback) => {
                 return pool.query(`INSERT INTO salesforce.basecamp_questionnaire_answer__c 
                     (questionnaire_response__r__external_id__c, answer__c, question__c, external_id__c, correct__c) 
                     VALUES 
-                    ('${responseUuid}', '${q.answerid}', '${q.questionid}', '${uuid()}', ${q.correct ? 'TRUE' : 'FALSE'});`);
+                    ('${responseUuid}', '${q.answerid}', '${q.id}', '${uuid()}', ${q.correct ? 'TRUE' : 'FALSE'});`);
             }));
 
         }).then(rs => {
