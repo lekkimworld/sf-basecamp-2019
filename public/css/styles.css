@@ -6,7 +6,8 @@ body {
     font-size: 20px;
     margin: 0 0 0 0;
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
+    justify-content: center;
 }
 
 h1 {
@@ -59,6 +60,15 @@ pre {
 
 .center {
     text-align: center;
+}
+
+.column_center {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    max-width: 768px;
 }
 
 .header {
