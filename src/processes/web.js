@@ -22,7 +22,7 @@ app.use(require("../configure-session.js")(redis.client));
 
 // configure handlebars for templating
 app.engine("handlebars", exphbs({
-    "defaultLayout": "main",
+    "defaultLayout": "questionnaire",
     "helpers": {
         "json": function (context) {
             return JSON.stringify(context);
@@ -40,8 +40,11 @@ app.use((err, req, res, next) => {
 })
 
 // listen
-app.listen(process.env.PORT || 8080);
-console.log(`Listening on port ${process.env.PORT || 8080}`)
+const port = process.env.PORT || 8080;
+const httpServer = require('http').createServer(app);
+require("../websocket.js").createInstance(httpServer);
+httpServer.listen(port);
+console.log(`Listening on port ${port}`);
 
 // setup termination listener
 terminateListener(() => {

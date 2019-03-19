@@ -1,0 +1,42 @@
+<h1>Events</h1>
+<pre class="events p-around--medium" id="events">
+</pre>
+<script>
+    let buildResult = []
+    let appendStatus = (txt) => {
+        buildResult.unshift(txt)
+        document.querySelector('#events').innerText = buildResult.join('\n')
+    }
+    appendStatus('... Opening Connection ...')
+    appendStatus('... Waiting for events stream (please have patience) ...')
+    fetch(`/api/events`, {
+        'credentials': 'same-origin',
+        'headers': {
+            'Content-Type': 'application/json'
+        }
+    }).then(resp => {
+        return resp.json()
+    }).then(obj => {
+        // see if success
+        if (obj.hasOwnProperty("success") && !obj.success) {
+            // not success
+            appendStatus(`... Unable to initiate build: ${obj.message}`)
+            appendStatus('... Done ...')
+            return
+        }
+
+        // et build id and initiate websocket
+        let buildId =  obj.buildId
+        console.log(`Connected to server - opening websocket`)
+        let url = `${document.location.hostname === 'localhost' ? 'ws' : 'wss'}://${document.location.hostname}:${document.location.port}/`
+        let ws = new WebSocket(url)
+        ws.addEventListener('open', (event) => {
+            console.log("Websocket open");
+        })
+        ws.addEventListener('message', (event) => {
+            let data = event.data
+            let obj = JSON.parse(data)
+            appendStatus(`${obj.msg}`)
+        })
+    })
+</script>

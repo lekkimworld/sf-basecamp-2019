@@ -20,6 +20,15 @@ pre {
     white-space: pre-wrap;
 }
 
+pre.events {
+    white-space: pre-wrap;
+    height: 400px;
+    overflow-x: scroll;
+    overflow-y: scroll;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
 .btn {
     border: 1px solid #121457;
     padding: 8px;
@@ -62,12 +71,15 @@ pre {
     text-align: center;
 }
 
-.column_center {
+.column-center {
     display: flex;
     flex-flow: column;
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: auto;
+}
+
+.column-center--questionnaire {
     max-width: 768px;
 }
 
@@ -213,6 +225,18 @@ input[type=text].required {
 .m-vertical--large {
     margin-top: 30px;
     margin-bottom: 20px;
+}
+
+.p-around--small {
+    padding: 10px;
+}
+
+.p-around--medium {
+    padding: 20px;
+}
+
+.p-around--large {
+    padding: 30px;
 }
 
 #validation_msg {
