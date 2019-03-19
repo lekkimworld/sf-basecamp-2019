@@ -24,7 +24,7 @@ module.exports = pool => {
         // query for questionnaires
         return Promise.all([
             Promise.resolve(ctx),
-            pool.query(`select questionnaire.context__c ctx, questionnaire.sfid questionnaireid, version.sfid versionid from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='${VERSION_STATUS}'`)
+            pool.query(`select questionnaire.context__c ctx, questionnaire.sfid questionnaireid, version.sfid versionid, version.enforce_correct_answers__c enforce_correct, version.greeting_title__c greeting_title, version.greeting_text__c greeting_text, version.confirmation_title__c confirmation_title, version.confirmation_text__c confirmation_text from salesforce.basecamp_questionnaire__c questionnaire, salesforce.basecamp_version__c version where questionnaire.sfid=version.questionnaire__c and status__c='${VERSION_STATUS}'`)
         ])        
     }).then(data => {
         const ctx = data[0];
@@ -33,7 +33,12 @@ module.exports = pool => {
             ctx.questionnaires[row.ctx] = {
                 "context": row.ctx,
                 "questionnaireid": row.questionnaireid,
-                "versionid": row.versionid
+                "versionid": row.versionid,
+                "enforceCorrect": row.enforce_correct, 
+                "greetingTitle": row.greeting_title,
+                "greetingText": row.greeting_text,
+                "confirmationTitle": row.confirmation_title,
+                "confirmationText": row.confirmation_text
             }
         })
         const promises = [

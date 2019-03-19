@@ -16,6 +16,58 @@ const getStateForContext = (req) => {
     return req.session[ctx];
 }
 
+const getStep0 = (state, ctx, questionnaire, templateCtx, req, res) => {
+    templateCtx.title = questionnaire.greetingTitle || "Greetings Trailblazer!";
+    templateCtx.text = questionnaire.greetingText || `<p>
+            We are so happy you decided to join us on the trail and blaze your way 
+            through the treasure hunt. Before we can get 
+            going you need to provide a few simple pieces of information on the next 
+            screen.
+        </p>`;
+    return res.render("root", templateCtx);
+}
+
+const getStep1 = (state, ctx, questionnaire, templateCtx, req, res) => {
+    if (req.session.nameData) templateCtx.nameData = req.session.nameData;
+    return res.render("personal-info", templateCtx);
+}
+
+const getStep2 = (state, ctx, questionnaire, templateCtx, req, res) => {
+    // render template using questions in sub-key as it otherwised rendered double...
+    templateCtx.questions = questionnaire.questions;
+    return res.render("questions", templateCtx);
+}
+
+const getStep3 = (state, ctx, questionnaire, templateCtx, req, res) => {
+    // get data from session / state and create payload
+    const nameData = req.session.nameData;
+    const answers = state.answers;
+    const payload = {
+        ctx,
+        nameData,
+        answers
+    }
+
+    // send into queue
+    queue.publish(payload);
+
+    // delete state data for context from session
+    delete req.session[ctx];
+
+    // add text data if any
+    templateCtx.title = questionnaire.confirmationTitle || "Thank You!";
+    templateCtx.text = questionnaire.confirmationText || `<p>
+        We received your information and we are so excited to figure out if you will 
+        win the grand prize. 
+    </p>
+    <p>
+        Thank you for playing and see you on the trail!
+    </p>`;
+
+    // return thank you page
+    return res.render("final", templateCtx);
+}
+
 // use JSON for POST bodies
 router.use(bodyParser.json());
 
@@ -47,6 +99,8 @@ router.post("/?*?", (req, res) => {
     } else if (payload.action === "prev") {
         step--;
         if (step < 0) step = 1;
+    } else if (payload.action === "restart") {
+        step = 0;
     }
     state.step = step;
     
@@ -88,52 +142,37 @@ router.get("/?*?", (req, res) => {
     }
     templateCtx.ctx.stringify = JSON.stringify(templateCtx.ctx);
 
-    // handle welcome step
-    if (step === 0) {
-        return res.render("root", templateCtx);
-    }
+    // get questionnaire
+    return redisClient.get(`questionnaire:${ctx}`).then(data => {
+        return JSON.parse(data);
 
-    // handle the personal info step
-    if (step === 1) {
-        if (req.session.nameData) templateCtx.nameData = req.session.nameData;
-        return res.render("personal-info", templateCtx);
-    }
-
-    // handle go to questions step
-    if (step === 2) {
-        // get questionnaire
-        return redisClient.get(`questionnaire:${ctx}`).then(data => {
-            return JSON.parse(data);
-        }).then(questionnaire => {
-            // render template using questions in sub-key as it otherwised rendered double...
-            templateCtx.questions = questionnaire.questions;
-            res.render("questions", templateCtx);
-        })
-    }
-
-    // handle final step
-    if (step === 3) {
-        // get data from session / state and create payload
-        const nameData = req.session.nameData;
-        const answers = state.answers;
-        const payload = {
-            ctx,
-            nameData,
-            answers
+    }).then(questionnaire => {
+        // handle welcome step
+        if (step === 0) {
+            return getStep0(state, ctx, questionnaire, templateCtx, req, res);
         }
 
-        // send into queue
-        queue.publish(payload);
+        // handle the personal info step
+        if (step === 1) {
+            return getStep1(state, ctx, questionnaire, templateCtx, req, res);
+        }
 
-        // delete state data for context from session
-        delete req.session[ctx];
+        // handle go to questions step
+        if (step === 2) {
+            return getStep2(state, ctx, questionnaire, templateCtx, req, res);
+        }
 
-        // return thank you page
-        return res.render("final", templateCtx);
-    }
-    
-    // coming here is an error
-    throw Error("You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!");
+        // handle final step
+        if (step === 3) {
+            return getStep3(state, ctx, questionnaire, templateCtx, req, res);
+        }
+
+        // coming here is an error
+        throw Error("You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!");
+
+    }).catch(err => {
+        return res.render("error", {"error": err.message});
+    })
 })
 
 module.exports = router;
