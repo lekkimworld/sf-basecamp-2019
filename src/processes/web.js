@@ -8,9 +8,7 @@ const exphbs = require("express-handlebars");
 const redis = require("../configure-redis.js");
 const queue = require("../configure-queue.js");
 const pool = require("../configure-db.js");
-
-// read data from Salesforce
-require("../configure-questionnaire-cache.js")(pool);
+const events = require("../configure-events.js");
 
 // create promisified redis client
 const redisClient = redis.promisifiedClient;
@@ -52,5 +50,6 @@ terminateListener(() => {
     pool.end();
     redisClient.end();
     queue.close();
+    events.terminate();
 	console.log("Terminated services");
 });

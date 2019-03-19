@@ -13,8 +13,8 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Queue",
-            "program": "${workspaceFolder}/src/processes/queue.js"
+            "name": "Backend",
+            "program": "${workspaceFolder}/src/processes/backend.js"
         },
         {
             "type": "node",

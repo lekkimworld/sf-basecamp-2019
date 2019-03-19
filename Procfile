@@ -1,2 +1,2 @@
 web: node src/processes/web.js
-queue: node src/processes/queue.js
+backend: node src/processes/backend.js

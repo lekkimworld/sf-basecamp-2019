@@ -3,6 +3,7 @@ const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const bodyParser = require("body-parser");
 const queue = require("../configure-queue.js");
+const events = require("../configure-events.js");
 
 /**
  * Return the context in use.
@@ -103,6 +104,9 @@ router.post("/?*?", (req, res) => {
         step = 0;
     }
     state.step = step;
+
+    // write to event stream
+    events.publish("navigation-post", `User at session ${req.session.id} went to step ${step}`);
     
     // see if there is personal info data in the payload
     if (payload.firstname || payload.lastname || payload.email) {
@@ -147,28 +151,25 @@ router.get("/?*?", (req, res) => {
         return JSON.parse(data);
 
     }).then(questionnaire => {
-        // handle welcome step
         if (step === 0) {
-            return getStep0(state, ctx, questionnaire, templateCtx, req, res);
+            // handle welcome step
+            getStep0(state, ctx, questionnaire, templateCtx, req, res);
+        } else if (step === 1) {
+            // handle the personal info step
+            getStep1(state, ctx, questionnaire, templateCtx, req, res);
+        } else if (step === 2) {
+            // handle go to questions step
+            getStep2(state, ctx, questionnaire, templateCtx, req, res);
+        } else if (step === 3) {
+            // handle final step
+            getStep3(state, ctx, questionnaire, templateCtx, req, res);
+        } else {
+            // coming here is an error
+            throw Error("You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!");
         }
 
-        // handle the personal info step
-        if (step === 1) {
-            return getStep1(state, ctx, questionnaire, templateCtx, req, res);
-        }
-
-        // handle go to questions step
-        if (step === 2) {
-            return getStep2(state, ctx, questionnaire, templateCtx, req, res);
-        }
-
-        // handle final step
-        if (step === 3) {
-            return getStep3(state, ctx, questionnaire, templateCtx, req, res);
-        }
-
-        // coming here is an error
-        throw Error("You went past the end of the trail - did you forget to turn? In all seriousness this shouldn't happen!");
+        // write to event stream
+        events.publish("navigation-get", `User at session ${req.session.id} went to step ${step}`);
 
     }).catch(err => {
         return res.render("error", {"error": err.message});
