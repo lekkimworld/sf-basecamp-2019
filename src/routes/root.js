@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const bodyParser = require("body-parser");
-const queue = require("../configure-queue.js");
 const events = require("../configure-events.js");
 
 /**
@@ -50,7 +49,7 @@ const getStep3 = (state, ctx, questionnaire, templateCtx, req, res) => {
     }
 
     // send into queue
-    queue.publish(payload);
+    events.queues.writesf.publish(payload);
 
     // delete state data for context from session
     delete req.session[ctx];
@@ -106,7 +105,7 @@ router.post("/?*?", (req, res) => {
     state.step = step;
 
     // write to event stream
-    events.publish("navigation-post", `User at session ${req.session.id} went to step ${step}`);
+    events.topics.events.publish("navigation.post", `User at session ${req.session.id} went to step ${step}`);
     
     // see if there is personal info data in the payload
     if (payload.firstname || payload.lastname || payload.email) {
@@ -169,7 +168,7 @@ router.get("/?*?", (req, res) => {
         }
 
         // write to event stream
-        events.publish("navigation-get", `User at session ${req.session.id} went to step ${step}`);
+        events.topics.events.publish("navigation.get", `User at session ${req.session.id} went to step ${step}`);
 
     }).catch(err => {
         return res.render("error", {"error": err.message});

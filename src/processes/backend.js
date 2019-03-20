@@ -1,6 +1,5 @@
 require("dotenv").config();
 const terminateListener = require("../terminate-listener.js");
-const queue = require("../configure-queue.js");
 const pool = require("../configure-db.js");
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const uuid = require('uuid/v4');
@@ -10,8 +9,13 @@ const events = require("../configure-events.js");
 // read data from Salesforce
 require("../configure-questionnaire-cache.js")(pool);
 
-queue.subscribe((msg, callback) => {
-    const payload = JSON.parse(msg.toString());
+events.queues.admin.subscribe((payload, callback) => {
+    if (payload.type === "cache.questionnaire" && payload.action === "invalidate") {
+        require("../configure-questionnaire-cache.js")(pool);
+    }
+})
+
+events.queues.writesf.subscribe((payload, callback) => {
     const answers = payload.answers.reduce((prev, answer) => {
         prev[answer.answerid] = answer;
         return prev;
@@ -111,8 +115,7 @@ queue.subscribe((msg, callback) => {
 // setup termination listener
 terminateListener(() => {
 	console.log("Terminating services");
-    queue.close();
+    events.close();
     pool.end();
-    events.terminate();
 	console.log("Terminated services");
 });

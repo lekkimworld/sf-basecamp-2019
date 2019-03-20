@@ -1,34 +1,97 @@
-const PubNub = require('pubnub')
+const url = process.env.CLOUDAMQP_URL;
+if (!url) throw Error('Missing CLOUDAMQP_URL environtment variable');
+const connPromise = require('amqplib').connect(url);
+const QUEUE_WRITESF = "QUEUE.WRITE-SF";
+const QUEUE_ADMIN = "QUEUE.ADMIN";
+const EXCHANGE_EVENTS = "EXCHANGE.EVENTS";
 
-const cfg = {
-    "ssl": true,
-    "subscribeKey": process.env.PUBNUB_SUBSCRIBE_KEY,
-    "publishKey": process.env.PUBNUB_PUBLISH_KEY
+const queuePublish = queueName => (data) => {
+    return connPromise.then(conn => {
+        return conn.createChannel();
+    }).then(ch => {
+        return ch.assertQueue(queueName).then(() => {
+            ch.sendToQueue(queueName, Buffer.from(typeof data === "object" ? JSON.stringify(data): data));
+            return ch.close();
+        })
+    })
 }
-if (!cfg.subscribeKey || !cfg.publishKey) throw Error("Missing PUBNUB_SUBSCRIBE_KEY and/or PUBNUB_PUBLISH_KEY variables in environment");
-const pubnub = new PubNub(cfg);
+const queueSubscribe = queueName => callback => {
+    connPromise.then(conn => {
+        return conn.createChannel();
+    }).then(ch => {
+        return ch.assertQueue(queueName).then(q => {
+            console.log(`queueSubscribe - binding channel to queue <${q.queue}>`)
+            ch.consume(queueName, msg => {
+                if (msg === null) return;
+                let payload = msg.content;
+                try {
+                    payload = JSON.parse(payload);
+                } catch (err) {}
+                setImmediate(() => {
+                    try {
+                        callback(payload, () => {
+                            ch.ack(msg);
+                        });
+                    } catch (err) {
+                        console.log(`queueSubscribe - ERROR caught when calling back with message for queue <${queueName}>: ${err.message}`)
+                    }
+                })
+            })
+        })
+    })
+}
+const topicPublish = exchangeName => (key, data) => {
+    return connPromise.then(conn => {
+        return conn.createChannel();
+    }).then(ch => {
+        return ch.assertExchange(exchangeName, "topic", {"durable": false}).then(() => {
+            ch.publish(exchangeName, key, Buffer.from(typeof data === "object" ? JSON.stringify(data): data));
+            return ch.close();
+        })
+    })
+}
+const topicSubscribe = exchangeName => (routingKey, callback) => {
+    connPromise.then(conn => {
+        return conn.createChannel();
+    }).then(ch => {
+        return ch.assertExchange(exchangeName, "topic", {"durable": false}).then(() => {
+            return ch.assertQueue("", {"exclusive": true})
+        }).then(q => {
+            console.log(`topicSubscribe - binding channel to queue <${q.queue}>, exchange <${exchangeName}>, key <${routingKey}>`)
+            ch.bindQueue(q.queue, exchangeName, routingKey);
+            ch.consume(q.queue, msg => {
+                if (msg === null) return;
+                try {
+                    callback(msg.fields.routingKey, msg.content, msg);
+                } catch (err) {
+                    console.log(`topicSubscribe - ERROR caught when calling back with message for exchange <${exchangeName}> and routing key <${routingKey}>: ${err.message}`)
+                }
+            }, {"noAck": true});
+        })
+    })
+}
 
 module.exports = {
-    "terminate": () => {
-        pubnub.unsubscribeAll();
+    "connectionPromise": connPromise,
+    "queues": {
+        "writesf": {
+            "publish": queuePublish(QUEUE_WRITESF),
+            "subscribe": queueSubscribe(QUEUE_WRITESF)
+        },
+        "admin": {
+            "publish": queuePublish(QUEUE_ADMIN),
+            "subscribe": queueSubscribe(QUEUE_ADMIN)
+        }
     },
-    "subscribe": (channel, callback) => {
-        const channels = Array.isArray(channel) ? channel : [channel];
-
-        // subcribe to channel
-        pubnub.addListener({
-            'message': (msg) => {
-                if (channels.includes(msg.channel)) callback(msg.channel, msg.message)
-            }
-        })
-        pubnub.subscribe({
-            "channels": channels
-        })
+    "topics": {
+        "events": {
+            "publish": topicPublish(EXCHANGE_EVENTS),
+            "subscribe": topicSubscribe(EXCHANGE_EVENTS)
+        }
     },
-    "publish": (channel, msg) => {
-        pubnub.publish({
-            "channel": channel,
-            "message": msg
+    "close": () => {
+        connPromise.then(conn => {
+            conn.close();
         })
     }
 }

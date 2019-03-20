@@ -6,7 +6,6 @@ const path = require("path");
 const express = require("express");
 const exphbs = require("express-handlebars");
 const redis = require("../configure-redis.js");
-const queue = require("../configure-queue.js");
 const pool = require("../configure-db.js");
 const events = require("../configure-events.js");
 
@@ -49,7 +48,6 @@ terminateListener(() => {
 	console.log("Terminating services");
     pool.end();
     redisClient.end();
-    queue.close();
-    events.terminate();
+    events.close();
 	console.log("Terminated services");
 });

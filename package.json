@@ -18,7 +18,6 @@
     "node-fetch": "^2.3.0",
     "pg": "^7.8.2",
     "promise-all-sequential": "^1.0.0",
-    "pubnub": "^4.23.0",
     "redis": "^2.8.0",
     "stream-cache": "0.0.2",
     "uuid": "^3.3.2",

@@ -7,14 +7,28 @@ const events = require("../configure-events.js");
 // use JSON for POST bodies
 router.use(bodyParser.json());
 
+router.get("/reload-questionnaires", (req, res) => {
+    res.type("json");
+
+    // simply post message to queue to get reload
+    events.queues.admin.publish({
+        "type": "cache.questionnaire",
+        "action": "invalidate"
+    }).then(() => {
+        res.send({"status": "success"});
+    }).catch(err => {
+        res.status(500).send({"status": "error", "error": err.message});
+    })
+})
+
 router.get("/events", (req, res) => {
     // get websockt and initialize stream
     const wsController = websocket.getInstance();
     const stream = wsController.initializeStream();
 
     // listen to topic and stream data to websocket
-    events.subscribe(["write-salesforce", "navigation-get"], (channel, msg) => {
-        stream.write({"msg": `${channel.toUpperCase()}: ${msg}`})
+    events.topics.events.subscribe("#", (routingKey, content) => {
+        stream.write({"msg": `${routingKey.toUpperCase()}: ${content}`})
     });
 
     // return to caller
