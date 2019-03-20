@@ -3,19 +3,12 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 const websocket = require("../websocket.js");
 const events = require("../configure-events.js");
+const auth = require("../configure-authentication.js");
 
 // use JSON for POST bodies
 router.use(bodyParser.json());
 
-const isLoggedIn = (req, res, next) => {
-    if (req.session.user !== undefined) {
-        next();
-    } else {
-        res.redirect("/login");
-    }
-} 
-
-router.get("/reload-questionnaires", isLoggedIn, (req, res) => {
+router.get("/reload-questionnaires", auth.isLoggedIn, (req, res) => {
     res.type("json");
 
     // simply post message to queue to get reload
@@ -29,7 +22,7 @@ router.get("/reload-questionnaires", isLoggedIn, (req, res) => {
     })
 })
 
-router.get("/events", isLoggedIn, (req, res) => {
+router.get("/events", auth.isLoggedIn, (req, res) => {
     // get websockt and initialize stream
     const wsController = websocket.getInstance();
     const stream = wsController.initializeStream();
