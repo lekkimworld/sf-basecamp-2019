@@ -3,6 +3,7 @@ const router = express.Router();
 const redisClient = require("../configure-redis.js").promisifiedClient;
 const bodyParser = require("body-parser");
 const events = require("../configure-events.js");
+const passport = require("passport");
 
 /**
  * Return the context in use.
@@ -79,6 +80,23 @@ router.use((req, res, next) => {
         return next();
     }
 })
+
+router.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/");
+})
+
+router.get("/login", passport.authenticate('oauth2', {failureRedirect: "/login"}), (req, res) => {
+    console.log("Logging in...");
+})
+
+router.get('/oauth/callback', passport.authenticate('oauth2', {failureRedirect: "/login"}), (req, res) => {
+    // save in session
+    req.session.user = req.user;
+
+    // successful authentication, redirect home.
+    res.redirect("/admin/events");
+});
 
 /**
  * We use the POST route to receive data from the UI and modify 

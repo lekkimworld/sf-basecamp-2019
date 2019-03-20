@@ -20,6 +20,11 @@ pre {
     white-space: pre-wrap;
 }
 
+.username {
+    color: #5c5a5a;
+    font-style: italic;
+}
+
 pre.events {
     white-space: pre-wrap;
     height: 400px;

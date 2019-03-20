@@ -7,7 +7,15 @@ const events = require("../configure-events.js");
 // use JSON for POST bodies
 router.use(bodyParser.json());
 
-router.get("/reload-questionnaires", (req, res) => {
+const isLoggedIn = (req, res, next) => {
+    if (req.session.user !== undefined) {
+        next();
+    } else {
+        res.redirect("/login");
+    }
+} 
+
+router.get("/reload-questionnaires", isLoggedIn, (req, res) => {
     res.type("json");
 
     // simply post message to queue to get reload
@@ -21,7 +29,7 @@ router.get("/reload-questionnaires", (req, res) => {
     })
 })
 
-router.get("/events", (req, res) => {
+router.get("/events", isLoggedIn, (req, res) => {
     // get websockt and initialize stream
     const wsController = websocket.getInstance();
     const stream = wsController.initializeStream();
