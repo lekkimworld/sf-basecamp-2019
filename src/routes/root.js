@@ -167,6 +167,10 @@ router.get("/?*?", (req, res) => {
 
     // get questionnaire
     return redisClient.get(`questionnaire:${ctx}`).then(data => {
+        if (!data) {
+            // user trying to access questionnaire we do not know
+            throw Error(`Hmmmm no trail here of this name (${ctx})... Did you follow a sign because there's no trailhead here. Sorry!`);
+        }
         return JSON.parse(data);
 
     }).then(questionnaire => {
@@ -191,6 +195,7 @@ router.get("/?*?", (req, res) => {
         events.topics.events.publish("navigation.get", `User at session ${req.session.id} went to step ${step}`);
 
     }).catch(err => {
+        events.topics.events.publish("navigation.error", err.message);
         return res.render("error", {"error": err.message});
     })
 })

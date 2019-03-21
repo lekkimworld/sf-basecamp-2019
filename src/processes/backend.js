@@ -13,6 +13,9 @@ events.queues.admin.subscribe((payload, callback) => {
     if (payload.type === "cache.questionnaire" && payload.action === "invalidate") {
         require("../configure-questionnaire-cache.js")(pool);
     }
+
+    // acknowledge message
+    callback();
 })
 
 events.queues.writesf.subscribe((payload, callback) => {

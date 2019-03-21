@@ -11,7 +11,7 @@ module.exports = pool => {
     formdata.append("client_secret", process.env.SF_CLIENT_SECRET);
     formdata.append("username", process.env.SF_USERNAME);
     formdata.append("password", process.env.SF_PASSWORD);
-    fetch(`${process.env.SF_LOGIN_URL || "https://login.salesforce.com"}/services/oauth2/token`, {
+    fetch(`https://${process.env.SF_LOGIN_URL || "login.salesforce.com"}/services/oauth2/token`, {
         "method": "post",
         "body": formdata
     }).then(res => res.json()).then(data => {
