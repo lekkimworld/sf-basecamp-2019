@@ -45,6 +45,15 @@ const getStep1 = (state, ctx, questionnaire, templateCtx, req, res) => {
 const getStep2 = (state, ctx, questionnaire, templateCtx, req, res) => {
     // render template using questions in sub-key as it otherwised rendered double...
     templateCtx.questions = questionnaire.questions;
+    templateCtx.title = questionnaire.questionnaireTitle;
+    templateCtx.text = questionnaire.questionnaireText || `<p>
+        Below you'll see a list of questions. For each question there is a number of potential answers and a 
+        map showing the location of the actual answers throughout the venue. For each question go to the 
+        spot on the map, decide what's the right answer and answer the question here in the app.
+    </p>
+    <p>
+        Happy trails!
+    </p>`;
     return res.render("questions", templateCtx);
 }
 

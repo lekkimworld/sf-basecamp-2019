@@ -2,8 +2,9 @@ const fetch = require("node-fetch");
 const FormData = require("form-data");
 const redisClient = require("./configure-redis.js").promisifiedClient;
 
+const SF_APIVERSION = process.env.SF_APIVERSION || "v44.0";
 const DEFAULT_STATUSES = ["Active"];
-const QUERY_BASE =`/services/data/v44.0/query?q=select+Id,Name,Text__c,Sorting__c,Question__r.Id,Question__r.Text__c,Question__r.Answer__c,Question__r.Version__r.Name,Question__r.Version__r.Id,Question__r.Version__r.Questionnaire__r.Context__c,Question__r.Version__r.Questionnaire__r.Id,+Question__r.Name,Question__r.Version__r.Greeting_Title__c,Question__r.Version__r.Greeting_Text__c,Question__r.Version__r.Confirmation_Title__c,Question__r.Version__r.Confirmation_Text__c,Question__r.Version__r.Enforce_Correct_Answers__c,Question__r.Image__c,Question__r.Sorting__c+from+Basecamp_Answer__c`;
+const QUERY_BASE =`/services/data/${SF_APIVERSION}/query?q=select+Id,Name,Text__c,Sorting__c,Question__r.Id,Question__r.Text__c,Question__r.Answer__c,Question__r.Version__r.Name,Question__r.Version__r.Id,Question__r.Version__r.Questionnaire__r.Context__c,Question__r.Version__r.Questionnaire__r.Id,+Question__r.Name,Question__r.Version__r.Greeting_Title__c,Question__r.Version__r.Greeting_Text__c,Question__r.Version__r.Questionnaire_Title__c,Question__r.Version__r.Questionnaire_Text__c,Question__r.Version__r.Confirmation_Title__c,Question__r.Version__r.Confirmation_Text__c,Question__r.Version__r.Enforce_Correct_Answers__c,Question__r.Image__c,Question__r.Sorting__c+from+Basecamp_Answer__c`;
 const ORDER_BY=`+ORDER+BY+Question__r.Sorting__c+ASC,+Sorting__c+ASC`;
 
 const getWhereStatus = (statuses) => {
@@ -69,6 +70,8 @@ const loadQuestionnaireData = (options = {}) => {
                     "enforceCorrect": version.Enforce_Correct__c, 
                     "greetingTitle": version.Greeting_Title__c,
                     "greetingText": version.Greeting_Text__c,
+                    "questionnaireTitle": version.Questionnaire_Title__c,
+                    "questionnaireText": version.Questionnaire_Text__c,
                     "confirmationTitle": version.Confirmation_Title__c,
                     "confirmationText": version.Confirmation_Text__c,
                     "questions": [],
@@ -103,9 +106,8 @@ const loadQuestionnaireData = (options = {}) => {
 
                 if (imgRefId) {
                     const hostname = ctx.sf_credentials.instance_url;
-                    const apiversion = process.env.SF_APIVERSION || "v44.0";
                     const accesstoken = ctx.sf_credentials.access_token;
-                    const url = `${hostname}/services/data/${apiversion}/sobjects/Basecamp_Question__c/${q.id}/richTextImageFields/Image__c/${q.imageRefId}`;
+                    const url = `${hostname}/services/data/${SF_APIVERSION}/sobjects/Basecamp_Question__c/${q.id}/richTextImageFields/Image__c/${q.imageRefId}`;
                     q.imagePromise = fetch(url, {"headers": {
                         "Authorization": `Bearer ${accesstoken}`
                     }}).then(res => res.buffer()).then(buf => {

@@ -1,17 +1,21 @@
-<div class="hidden m-top--medium m-bottom--small" id="validation_msg">
+{{#if this.title}}
+<h1>{{this.title}}</h1>
+{{/if}}
+{{{this.text}}}
+<div class="hidden m-vertical--medium m-bottom--small" id="validation_msg">
     Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
-<div class="question m-top--medium clear-fix" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
-    <div class="question_text"><ol start="{{this.index}}"><li>{{this.text}}</li></ol></div>
-    <div class="answers">
+<div class="question clear-fix p-around--medium m-bottom--medium" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
+    <div class="question_text">{{this.text}}</div>
+    <div class="answers m-vertical--small">
         {{#each this.answers}}
-        <div class="answer" answerid="{{this.answerid}}">
+        <div class="answer m-right--xsmall" answerid="{{this.answerid}}">
             <input type="radio" name="question{{../index}}" value="{{this.text}}"><label>{{this.text}}</label>
         </div>
         {{/each}}
     </div>
-    <div class="image-container">
+    <div class="image-container text-center">
         <img src="{{this.image}}" class="image-scale-vertical image-scale-horizontal" />
     </div>
 </div>

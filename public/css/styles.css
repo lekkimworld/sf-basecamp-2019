@@ -113,30 +113,30 @@ pre.events {
 }
 
 .question {
-    padding-left: 10px;
-    padding-right: 10px;
+    border: 1px solid black;
+    border-radius: 5px;
 }
 
 .question_text {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: bold;
 }
 
-.question_text ol {
-    margin-bottom: 1rem;
+.answers {
+    display: flex;
+    flex-direction: row;
+    font-size: 1.5rem;
 }
 
-.answers {
-    width: 110px;
-    float: left;
-    font-size: 1.5rem;
+.answer {
+    flex: 1;
+    text-align: center;
 }
 
 input[type=radio] {
     border: 0px;
     width: 1.5rem;
     height: 1.5rem;
-    margin-right: 15px;
 }
 
 input[type=checkbox] {
@@ -154,6 +154,7 @@ input[type=checkbox] {
 
 label {
     font-size: 1.5rem;
+    display: block;
 }
 
 input[type=text] {
@@ -171,6 +172,10 @@ input[type=text].required {
 
 .image-container {
     overflow: hidden;
+}
+
+.text-center {
+    text-align: center;
 }
 
 .image-scale-horizontal {
@@ -215,6 +220,22 @@ input[type=text].required {
 
 .m-bottom--large {
     margin-bottom: 30px;
+}
+
+.m-right--xsmall {
+    margin-right: 5px;
+}
+
+.m-right--small {
+    margin-right: 10px;
+}
+
+.m-right--medium {
+    margin-right: 20px;
+}
+
+.m-right--large {
+    margin-right: 30px;
 }
 
 .m-vertical--small {
