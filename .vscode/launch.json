@@ -15,12 +15,6 @@
             "request": "launch",
             "name": "Backend",
             "program": "${workspaceFolder}/src/processes/backend.js"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Configure Questionnaire Cache",
-            "program": "${workspaceFolder}/src/configure-questionnaire-cache.js"
         }
     ]
 }
