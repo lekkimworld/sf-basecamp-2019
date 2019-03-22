@@ -4,6 +4,7 @@
 </div>
 <input type="text" value="{{this.nameData.firstname}}" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
 <input type="text" value="{{this.nameData.lastname}}" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" value="{{this.nameData.company}}" class="m-top--small" id="company" placeholder="Company..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
 <input type="text" value="{{this.nameData.email}}" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 <div class="m-top--medium">
     At Salesforce Trust is our #1 value and we respect your choice not to receive information from 
@@ -56,8 +57,9 @@
         }
         const firstname = validateText("#firstname");
         const lastname = validateText("#lastname");
+        const company = validateText("#company");
         const email = validateEmail("#email");
-        if (firstname & lastname && email) {
+        if (firstname & lastname && company && email) {
             // we validated
             document.getElementById("validation_msg").classList.remove("visible");
             document.getElementById("validation_msg").classList.add("hidden");
@@ -65,6 +67,7 @@
             postStateMessage("next", {
                 "firstname": getElem("#firstname").value, 
                 "lastname": getElem("#lastname").value, 
+                "company": getElem("#company").value, 
                 "email": getElem("#email").value,
                 "optin": getElem("#optin").checked
             })

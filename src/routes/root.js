@@ -30,6 +30,15 @@ const getStep0 = (state, ctx, questionnaire, templateCtx, req, res) => {
 
 const getStep1 = (state, ctx, questionnaire, templateCtx, req, res) => {
     if (req.session.nameData) templateCtx.nameData = req.session.nameData;
+    if (!templateCtx.nameData && process.env.APPDEV_PERSONINFO) {
+        console.log("APPDEV_PERSONINFO set - adding dummy person info to template context");
+        templateCtx.nameData = {
+            "firstname": "John",
+            "lastname": "Doe",
+            "company": "Acme Inc.",
+            "email": "john.doe@example.com"
+        }
+    }
     return res.render("personal-info", templateCtx);
 }
 
@@ -128,7 +137,7 @@ router.post("/?*?", (req, res) => {
     events.topics.events.publish("navigation.post", `User at session ${req.session.id} went to step ${step}`);
     
     // see if there is personal info data in the payload
-    if (payload.firstname || payload.lastname || payload.email) {
+    if (payload.firstname || payload.lastname || payload.company || payload.email) {
         req.session.nameData = payload;
         if (req.session.nameData.email) req.session.nameData.email = req.session.nameData.email.toLowerCase(); 
     }

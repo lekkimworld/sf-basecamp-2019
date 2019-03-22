@@ -49,7 +49,7 @@ events.queues.writesf.subscribe((payload, callback) => {
         
         // log it
         console.log('-------');
-        console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.email}, opt-in: ${payload.nameData.optin})`);
+        console.log(`${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.company} / ${payload.nameData.email}, opt-in: ${payload.nameData.optin})`);
         questionnaire.questions.forEach(question => {
             console.log(`${question.index}. ${question.text}, correct: ${question.correct} (questionid <${question.id}>, answerid <${question.answerid}>)`);
         })
@@ -69,14 +69,14 @@ events.queues.writesf.subscribe((payload, callback) => {
             const optout = payload.nameData.optin ? 'FALSE' : 'TRUE';
             if (rs.rows.length) {
                 // found existing account so update it
-                return pool.query(`UPDATE salesforce.Account SET firstname='${payload.nameData.firstname}', lastname='${payload.nameData.lastname}', PersonHasOptedOutOfEmail=${optout} 
+                return pool.query(`UPDATE salesforce.Account SET firstname='${payload.nameData.firstname}', lastname='${payload.nameData.lastname}', Company_Name__pc='${payload.nameData.company}', PersonHasOptedOutOfEmail=${optout} 
                     WHERE PersonEmail='${payload.nameData.email}'`);
             } else {
                 // no existing account so insert
                 return pool.query(`INSERT INTO salesforce.Account 
-                    (External_ID__c, PersonEmail, PersonHasOptedOutOfEmail, firstname, lastname, recordtypeid) 
+                    (External_ID__c, PersonEmail, PersonHasOptedOutOfEmail, firstname, lastname, Company_Name__pc, recordtypeid) 
                     VALUES 
-                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
+                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${payload.nameData.company}', ${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
             }
 
         }).then(rs => {
@@ -103,7 +103,7 @@ events.queues.writesf.subscribe((payload, callback) => {
 
         }).then(rs => {
             // write to event stream
-            events.publish("write-salesforce", `Wrote data for ${payload.nameData.firstname} ${payload.nameData.lastname} to Salesforce for questionnaire <${questionnaire.questionnaireid}>`);
+            events.topics.events.publish("write-salesforce", `Wrote data for ${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.company}) to Salesforce for questionnaire <${questionnaire.questionnaireid}>`);
             
             // callback and acknowledge the processing of the msg
             callback();
