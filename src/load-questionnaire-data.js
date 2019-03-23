@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-const FormData = require("form-data");
+const sfauth = require("./salesforce-oauth.js");
 const redisClient = require("./configure-redis.js").promisifiedClient;
 
 const SF_APIVERSION = process.env.SF_APIVERSION || "v44.0";
@@ -19,16 +19,8 @@ const loadQuestionnaireData = (options = {}) => {
     const statuses = options.statuses || undefined;
     const versionIds = options.versionIds || undefined;
     
-    const formdata = new FormData();
-    formdata.append("grant_type", "password");
-    formdata.append("client_id", process.env.SF_CLIENT_ID);
-    formdata.append("client_secret", process.env.SF_CLIENT_SECRET);
-    formdata.append("username", process.env.SF_USERNAME);
-    formdata.append("password", process.env.SF_PASSWORD);
-    return fetch(`https://${process.env.SF_LOGIN_URL || "login.salesforce.com"}/services/oauth2/token`, {
-        "method": "post",
-        "body": formdata
-    }).then(res => res.json()).then(data => {
+    // get auth data
+    return sfauth().then(data => {
         // build context
         const ctx = {
             "sf_credentials": data,
@@ -55,6 +47,15 @@ const loadQuestionnaireData = (options = {}) => {
         // build context
         const ctx = dataArr[0];
         const data = dataArr[1];
+
+        // sanity
+        if ((!data.records || !data.records.length) && versionIds && versionIds.length) {
+            return Promise.reject(`Unable to load questionnaire for version ID('s) (${versionIds.join()})`)
+        } else if (!data.records || !data.records.length) {
+            return Promise.resolve(ctx);
+        } 
+
+        // process data
         ctx.questionnaires = data.records.reduce((questionnaires, record) => {
             // get refs
             const version = record.Question__r.Version__r;

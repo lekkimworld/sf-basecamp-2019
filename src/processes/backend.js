@@ -4,10 +4,16 @@ const redisClient = require("../configure-redis.js").promisifiedClient;
 const uuid = require('uuid/v4');
 const promiseAllSequential = require("promise-all-sequential");
 const events = require("../configure-events.js");
+const sfauth = require("../salesforce-oauth.js");
+const cache = require("../configure-questionnaire-cache.js");
+const jsforce = require('jsforce');
 
 // read data from Salesforce
-require("../configure-questionnaire-cache.js")();
+cache.initialize();
 
+/**
+ * Reload all questionnaires if asked to.
+ */
 events.queues.admin.subscribe((payload, callback) => {
     if (payload.type === "cache.questionnaire" && payload.action === "invalidate") {
         require("../configure-questionnaire-cache.js")();
@@ -17,6 +23,9 @@ events.queues.admin.subscribe((payload, callback) => {
     callback();
 })
 
+/**
+ * Write to Salesforce.
+ */
 events.queues.writesf.subscribe((payload, callback) => {
     const answers = payload.answers.reduce((prev, answer) => {
         prev[answer.answerid] = answer;
@@ -112,6 +121,30 @@ events.queues.writesf.subscribe((payload, callback) => {
             return pool.query("ROLLBACK");
         })
     })
+})
+
+/**
+ * Listen for Platform Events from Salesforce to reload questionnaire 
+ * on version activation.
+ */
+sfauth().then(data => {
+    // create connection
+    const conn = new jsforce.Connection({
+        "instanceUrl": data.instance_url,
+        "accessToken": data.access_token
+    });
+    conn.streaming.topic("/event/Basecamp_Version_Activation__e").subscribe(msg => {
+        const versionId = msg.payload.Version_ID__c;
+        const context = msg.payload.Context__c;
+        console.log(`Received Platform Event for Version Activation with context <${context}> and version ID <${versionId}>`);
+        try {
+            cache.load(context, versionId);
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}).catch(err => {
+    console.log(err);
 })
 
 // setup termination listener
