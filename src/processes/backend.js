@@ -30,7 +30,7 @@ events.queues.admin.subscribe((payload, callback) => {
 events.queues.writesf.subscribe((payload, callback) => {
     if (!payload.answers) {
         // no answers in payload - that's an error
-        console.log(`Received payload to write to Salesforce but there are no answers - ignore`);
+        console.log(`ERROR - Received payload to write to Salesforce but there are no answers - ignore`);
         return callback();
     }
     const answers = payload.answers.reduce((prev, answer) => {

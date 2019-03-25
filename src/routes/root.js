@@ -201,6 +201,9 @@ router.post("/?*?", (req, res) => {
         // send message to topic
         events.topics.events.publish("status.ok", `User at session ${req.session.id} - answer data in request - succesfully handled post in step ${step}`);
 
+        // update state
+        state.answers = payload.answers;
+            
         // return
         res.type("json");
         res.send({"status": "ok"});
