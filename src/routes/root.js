@@ -130,20 +130,11 @@ router.post("/?*?", (req, res) => {
     // get payload
     const payload = req.body;
 
-    // figure out which step we're at and store back in session
+    // figure out which step we're at
     let step = state.step || 0;
-    if (payload.action === "next") {
-        step++;
-    } else if (payload.action === "prev") {
-        step--;
-        if (step < 0) step = 1;
-    } else if (payload.action === "restart") {
-        step = 0;
-    }
-    state.step = step;
 
     // write to event stream
-    events.topics.events.publish("navigation.post", `User at session ${req.session.id} went to step ${step}`);
+    events.topics.events.publish("navigation.post", `User at session ${req.session.id} is at step ${step}`);
     
     // see if there is personal info data in the payload
     if (payload.firstname || payload.lastname || payload.company || payload.email) {
@@ -151,16 +142,80 @@ router.post("/?*?", (req, res) => {
         if (req.session.nameData.email) req.session.nameData.email = req.session.nameData.email.toLowerCase(); 
     }
 
-    // see if there are answers in the payload
-    if (payload.answers) {
-        state.answers = payload.answers;
-    }
+    // get questionnaire
+    return redisClient.get(`questionnaire:${ctx}`).then(data => {
+        if (!data) {
+            return Promise.reject(Error(`Unable to find questionnaire for context (${ctx})`));
+        }
+        return JSON.parse(data);
+    }).then(questionnaire => {
+        if (payload.answers && questionnaire.enforceCorrect) {
+            const answers = payload.answers.reduce((prev, answer) => {
+                prev[answer.answerid] = answer;
+                return prev;
+            }, {});
 
-    // return
-    res.type("json");
-    res.send({
-        "status": "ok"
+            // we need to enforce correct answers - figure out what questions are correct
+            const questionCount = questionnaire.questionCount;
+            let correctCount = 0;
+            questionnaire.questions.forEach(question => {
+                const correctAnswerId = question.correctAnswerId;
+                let correct = false;
+                question.answers.forEach(answer => {
+                    const actualAnswer = answers[answer.answerid];
+                    if (actualAnswer && correctAnswerId === actualAnswer.answerid) correct = true;
+                })
+                
+                const providedAnswer = payload.answers.reduce((prev, answer) => {
+                    if (prev) return prev;
+                    if (answer.questionid === question.id) return answer
+                }, undefined)
+
+                // track correct
+                if (correct) correctCount++;
+            })
+
+            if (questionCount === correctCount) {
+                // all are correct
+                return Promise.resolve();
+            } else {
+                // not all are correct
+                return Promise.reject(Error(`Not all answers are correct (${correctCount} of ${questionCount})`));
+            }
+        } else {
+            // do not enfore
+            return Promise.resolve();
+        }
+    }).then(() => {
+        // get next step and update state
+        if (payload.action === "next") {
+            step++;
+        } else if (payload.action === "prev") {
+            step--;
+            if (step < 0) step = 1;
+        } else if (payload.action === "restart") {
+            step = 0;
+        }
+        state.step = step;
+
+        // send message to topic
+        events.topics.events.publish("status.ok", `User at session ${req.session.id} - answer data in request - succesfully handled post in step ${step}`);
+
+        // return
+        res.type("json");
+        res.send({"status": "ok"});
+
+    }).catch(err => {
+        // send error
+        events.topics.events.publish("error.answers", `User at session ${req.session.id} - unable to process step ${step} post message: ${err.message}`);
+        res.type("json");
+        res.send({
+            "status": "error",
+            "error": err.message
+        });
     })
+
+    
 })
 
 /**

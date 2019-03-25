@@ -3,7 +3,6 @@
 {{/if}}
 {{{this.text}}}
 <div class="hidden m-vertical--medium m-bottom--small" id="validation_msg">
-    Sorry! You seem to not have answered all questions...
 </div>
 {{#each this.questions}}
 <div class="question clear-fix p-around--medium m-bottom--medium" questionid="{{this.id}}" id="question{{this.index}}" answer="{{this.correctAnswerId}}">
@@ -49,11 +48,22 @@
         if (answers.length === questionIds.length) {
             postStateMessage("next", {
                 "answers": answers
+            }).then(() => {
+                // this is fine
+            }).catch(err => {
+                // show error message and scroll to top to ensure user can see it
+                let elem = document.getElementById("validation_msg");
+                elem.innerText = "Sorry! " + err.message;
+                elem.classList.remove("hidden");
+                elem.classList.add("visible");
+                window.scrollTo(0,0);
             })
         } else {
             // show error message and scroll to top to ensure user can see it
-            document.getElementById("validation_msg").classList.remove("hidden");
-            document.getElementById("validation_msg").classList.add("visible");
+            let elem = document.getElementById("validation_msg");
+            elem.innerText = "Sorry! You seem to not have answered all questions...";
+            elem.classList.remove("hidden");
+            elem.classList.add("visible");
             window.scrollTo(0,0);
         }
     })

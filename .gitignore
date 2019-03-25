@@ -1,5 +1,6 @@
 node_modules
 .env
 *.dump
+*.rdb
 
 recreate_local_db.sh

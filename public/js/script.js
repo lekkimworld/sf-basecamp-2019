@@ -5,14 +5,19 @@ const postStateMessage = (action, data) => {
     }, data);
 
     // post to update state
-    fetch(document.location.href, {
+    return fetch(document.location.href, {
         "method": "post", 
         "headers": {
             "Content-Type": "application/json"
         },
         "body": JSON.stringify(payload)
     }).then(res => res.json()).then(data => {
-        window.location.reload();
+        if (data.status === "ok") {
+            window.location.reload();
+            return Promise.resolve();
+        } else {
+            return Promise.reject(Error(data.error));
+        }
     })
 }
 window.addEventListener("load", () => {

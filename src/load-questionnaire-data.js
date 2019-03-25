@@ -68,7 +68,7 @@ const loadQuestionnaireData = (options = {}) => {
                     "context": context,
                     "questionnaireid": q.Id,
                     "versionid": version.Id,
-                    "enforceCorrect": version.Enforce_Correct__c, 
+                    "enforceCorrect": version.Enforce_Correct_Answers__c, 
                     "greetingTitle": version.Greeting_Title__c,
                     "greetingText": version.Greeting_Text__c,
                     "questionnaireTitle": version.Questionnaire_Title__c,
