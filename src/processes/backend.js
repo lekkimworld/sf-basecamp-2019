@@ -7,6 +7,7 @@ const events = require("../configure-events.js");
 const sfauth = require("../salesforce-oauth.js");
 const cache = require("../configure-questionnaire-cache.js");
 const jsforce = require('jsforce');
+const pool = require("../configure-db.js");
 
 // read data from Salesforce
 cache.initialize();
