@@ -28,6 +28,11 @@ events.queues.admin.subscribe((payload, callback) => {
  * Write to Salesforce.
  */
 events.queues.writesf.subscribe((payload, callback) => {
+    if (!payload.answers) {
+        // no answers in payload - that's an error
+        console.log(`Received payload to write to Salesforce but there are no answers - ignore`);
+        return callback();
+    }
     const answers = payload.answers.reduce((prev, answer) => {
         prev[answer.answerid] = answer;
         return prev;
@@ -85,7 +90,7 @@ events.queues.writesf.subscribe((payload, callback) => {
                 return pool.query(`INSERT INTO salesforce.Account 
                     (External_ID__c, PersonEmail, PersonHasOptedOutOfEmail, firstname, lastname, Company_Name__pc, recordtypeid) 
                     VALUES 
-                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${payload.nameData.company}', ${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
+                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${payload.nameData.company}', '${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
             }
 
         }).then(rs => {
