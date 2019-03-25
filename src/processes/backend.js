@@ -117,7 +117,7 @@ events.queues.writesf.subscribe((payload, callback) => {
 
         }).then(rs => {
             // write to event stream
-            events.topics.events.publish("write-salesforce", `Wrote data for ${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.company}) to Salesforce for questionnaire <${questionnaire.questionnaireid}>`);
+            events.topics.events.publish("salesforce.write", `Wrote data for ${payload.nameData.firstname} ${payload.nameData.lastname} (${payload.nameData.company}) to Salesforce for questionnaire <${questionnaire.questionnaireid}>`);
             
             // callback and acknowledge the processing of the msg
             callback();
