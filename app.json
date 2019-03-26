@@ -2,7 +2,6 @@
   "addons": [
     "cloudamqp",
     "herokuconnect",
-    "loaderio",
     "papertrail",
     "heroku-postgresql",
     "heroku-redis"
