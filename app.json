@@ -1,0 +1,65 @@
+{
+  "addons": [
+    "cloudamqp",
+    "herokuconnect",
+    "loaderio",
+    "papertrail",
+    "heroku-postgresql",
+    "heroku-redis"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "CLOUDAMQP_APIKEY": {
+      "required": true
+    },
+    "CLOUDAMQP_URL": {
+      "required": true
+    },
+    "NODE_ENV": {
+      "required": true
+    },
+    "PAPERTRAIL_API_TOKEN": {
+      "required": true
+    },
+    "PERSONACCOUNT_RECORDTYPEID": {
+      "required": true
+    },
+    "REDIS_URL": {
+      "required": true
+    },
+    "SESSION_SECRET": {
+      "required": true
+    },
+    "SF_CALLBACK_URL": {
+      "required": true
+    },
+    "SF_CLIENT_ID": {
+      "required": true
+    },
+    "SF_CLIENT_SECRET": {
+      "required": true
+    },
+    "SF_PASSWORD": {
+      "required": true
+    },
+    "SF_USERNAME": {
+      "required": true
+    }
+  },
+  "formation": {
+    "backend": {
+      "quantity": 1
+    },
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "sf-basecamp-2019",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
