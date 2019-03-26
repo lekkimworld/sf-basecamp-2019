@@ -32,7 +32,7 @@ app.engine("handlebars", exphbs({
 app.set('view engine', 'handlebars')
 
 // send to tls is production
-if(process.env.NODE_ENV === 'production') {
+if(process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'qa') {
   app.use((req, res, next) => {
     if (req.header('x-forwarded-proto') !== 'https')
       res.redirect(`https://${req.header('host')}${req.url}`);
