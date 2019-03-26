@@ -13,6 +13,7 @@ const promisifiedClient = (function() {
         'set': promisify(client.set).bind(client),
         'setex': promisify(client.setex).bind(client),
         'keys': promisify(client.keys).bind(client),
+        'del': promisify(client.del).bind(client),
         'mget': promisify(client.mget).bind(client),
         'expire': promisify(client.expire).bind(client),
         'end': promisify(client.end).bind(client)

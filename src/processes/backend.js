@@ -142,9 +142,16 @@ sfauth().then(data => {
     conn.streaming.topic("/event/Basecamp_Version_Activation__e").subscribe(msg => {
         const versionId = msg.payload.Version_ID__c;
         const context = msg.payload.Context__c;
-        console.log(`Received Platform Event for Version Activation with context <${context}> and version ID <${versionId}>`);
+        const status = msg.payload.Status__c;
+        console.log(`Received Platform Event for Version Activation with context <${context}>, version ID <${versionId}>, status <${status}>`);
         try {
-            cache.load(context, versionId);
+            if (status === "active") {
+                cache.load(context, versionId);
+            } else if (status === "retired") {
+                cache.remove(context);
+            } else {
+                console.log(`WARNING - unknown status <${status}> received in Platform event`);
+            }
         } catch (err) {
             console.log(err);
         }
