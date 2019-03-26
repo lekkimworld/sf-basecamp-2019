@@ -21,7 +21,7 @@ module.exports = {
     "remove": (contextPath) => {
         const redisKey = `${QUESTIONNAIRE_KEY_PREFIX}${contextPath}`;
         console.log(`Deleting questionnaire from cache (key <${redisKey}>)`);
-        redisClient.del(redisClient).then(() => {
+        redisClient.del(redisKey).then(() => {
             console.log(`Deleted questionnaire with key <${redisKey}> from cache`);
         }).catch(err => {
             console.log(`ERROR - unable to delete questionnaire with key <${redisKey}> from cache`);
