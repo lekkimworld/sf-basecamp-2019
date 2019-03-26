@@ -31,18 +31,18 @@ app.engine("handlebars", exphbs({
 }))
 app.set('view engine', 'handlebars')
 
-// configure routes
-require("../configure-routes.js")(app);
-
 // send to tls is production
 if(process.env.NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-      if (req.header('x-forwarded-proto') !== 'https')
-        res.redirect(`https://${req.header('host')}${req.url}`);
-      else
-        next();
-    })
-  }
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https')
+      res.redirect(`https://${req.header('host')}${req.url}`);
+    else
+      next();
+  })
+}
+
+// configure routes
+require("../configure-routes.js")(app);
 
 // add error handler
 app.use((err, req, res, next) => {
