@@ -20,7 +20,7 @@
     },
     "NODE_ENV": {
       "required": false,
-      "value": "development"
+      "value": "demo"
     },
     "CLOUDAMQP_APIKEY": {
       "required": false

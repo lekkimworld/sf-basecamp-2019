@@ -2,10 +2,10 @@
 <div class="hidden m-vertical--medium" id="validation_msg">
     Sorry! You seem to be missing filling in some fields...
 </div>
-<input type="text" value="{{this.nameData.firstname}}" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
-<input type="text" value="{{this.nameData.lastname}}" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
-<input type="text" value="{{this.nameData.company}}" class="m-top--small" id="company" placeholder="Company..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
-<input type="text" value="{{this.nameData.email}}" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
+<input type="text" disabled="{{isDisabled}}" readonly="{{isDisabled}}" value="{{this.nameData.firstname}}" id="firstname" placeholder="Firstname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" disabled="{{isDisabled}}" readonly="{{isDisabled}}" value="{{this.nameData.lastname}}" class="m-top--small" id="lastname" placeholder="Lastname..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" disabled="{{isDisabled}}" readonly="{{isDisabled}}" value="{{this.nameData.company}}" class="m-top--small" id="company" placeholder="Company..." autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false"></input>
+<input type="text" disabled="{{isDisabled}}" readonly="{{isDisabled}}" value="{{this.nameData.email}}" class="m-top--small" id="email" placeholder="Email..." autocomplete="new-password" autocorrect="off" autocapitalize="off" spellcheck="false"></input>
 <div class="m-top--medium">
     At Salesforce Trust is our #1 value and we respect your choice not to receive information from 
     us. By checking the below box you opt into receiving information about upcoming local 
@@ -13,9 +13,9 @@
 </div>
 <div class="m-top--medium">
     {{#if this.nameData.optin}}
-    <input type="checkbox" id="optin" name="optin" checked>
+    <input type="checkbox" id="optin" name="optin" checked  disabled="{{isDisabled}}" readonly="{{isDisabled}}">
     {{else}}
-    <input type="checkbox" id="optin" name="optin">
+    <input type="checkbox" id="optin" name="optin" disabled="{{isDisabled}}" readonly="{{isDisabled}}">
     {{/if}}
     <label for="optin" style="display: inline">
         Yes - I want to hear more!

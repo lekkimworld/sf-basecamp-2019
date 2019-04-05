@@ -26,6 +26,9 @@ app.engine("handlebars", exphbs({
     "helpers": {
         "json": function (context) {
             return JSON.stringify(context);
+        },
+        "isDisabled": function (context) {
+          return process.env.NODE_ENV === "demo" ? "true" : "false";
         }
     }
 }))

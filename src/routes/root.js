@@ -4,6 +4,10 @@ const redisClient = require("../configure-redis.js").promisifiedClient;
 const bodyParser = require("body-parser");
 const events = require("../configure-events.js");
 const passport = require("passport");
+const Haikunator = require("haikunator");
+
+// generator for fake names using when 
+const haikunator = new Haikunator();
 
 /**
  * Return the context in use.
@@ -30,14 +34,16 @@ const getStep0 = (state, ctx, questionnaire, templateCtx, req, res) => {
 
 const getStep1 = (state, ctx, questionnaire, templateCtx, req, res) => {
     if (req.session.nameData) templateCtx.nameData = req.session.nameData;
-    if (!templateCtx.nameData && process.env.APPDEV_PERSONINFO) {
-        console.log("APPDEV_PERSONINFO set - adding dummy person info to template context");
+    if (!templateCtx.nameData && process.env.NODE_ENV === "demo") {
+        console.log("NODE_ENV === \"demo\" set - adding dummy person info to template context");
+        req.session.haiku = haikunator.haikunate();
         templateCtx.nameData = {
             "firstname": "John",
             "lastname": "Doe",
             "company": "Acme Inc.",
-            "email": "john.doe@example.com"
+            "email": `${req.session.haiku}@example.com`
         }
+        templateCtx.lockFields = true;
     }
     return res.render("personal-info", templateCtx);
 }
@@ -82,6 +88,9 @@ const getStep3 = (state, ctx, questionnaire, templateCtx, req, res) => {
     <p>
         Thank you for playing and see you on the trail!
     </p>`;
+    if (process.env.NODE_ENV === "demo") {
+        templateCtx.text = templateCtx.text + `<p>Your lottery name is: <br/><b>${req.session.haiku}</b></p>`;
+    }
 
     // return thank you page
     return res.render("final", templateCtx);
