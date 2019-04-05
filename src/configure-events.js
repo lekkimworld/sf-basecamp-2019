@@ -1,5 +1,8 @@
 const url = process.env.CLOUDAMQP_URL;
-if (!url) throw Error('Missing CLOUDAMQP_URL environtment variable');
+if (!url) {
+    console.log("Missing CLOUDAMQP_URL environtment variable - cannot start");
+    return;
+}
 const connPromise = require('amqplib').connect(url);
 const QUEUE_WRITESF = "QUEUE.WRITE-SF";
 const QUEUE_ADMIN = "QUEUE.ADMIN";
