@@ -49,7 +49,10 @@ module.exports = {
         ));
     },
     "isLoggedIn": (req, res, next) => {
-        if (req.session.user !== undefined) {
+        if (!process.env.SF_CALLBACK_URL) {
+            console.log("THERE IS NO SF_CALLBACK_URL configured in the environment - will not use authentication");
+            next();
+        } else if (req.session.user !== undefined) {
             next();
         } else {
             res.redirect("/login");

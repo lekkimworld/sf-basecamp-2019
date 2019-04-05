@@ -90,7 +90,7 @@ events.queues.writesf.subscribe((payload, callback) => {
                 return pool.query(`INSERT INTO salesforce.Account 
                     (External_ID__c, PersonEmail, PersonHasOptedOutOfEmail, firstname, lastname, Company_Name__pc, recordtypeid) 
                     VALUES 
-                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${payload.nameData.company}', '${process.env.PERSONACCOUNT_RECORDTYPEID}');`);
+                    ('${payload.nameData.email}', '${payload.nameData.email}', ${optout}, '${payload.nameData.firstname}', '${payload.nameData.lastname}', '${payload.nameData.company}', '${process.env.SF_PERSONACCOUNT_RECORDTYPEID}');`);
             }
 
         }).then(rs => {

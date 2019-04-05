@@ -15,31 +15,36 @@
     }
   ],
   "env": {
-    "CLOUDAMQP_APIKEY": {
-      "required": true
-    },
-    "CLOUDAMQP_URL": {
-      "required": true
-    },
-    "DATABASE_URL": {
-      "required": true
-    },
-    "NODE_ENV": {
-      "required": false
-    },
-    "PAPERTRAIL_API_TOKEN": {
-      "required": true
-    },
-    "PERSONACCOUNT_RECORDTYPEID": {
-      "required": true
-    },
-    "REDIS_URL": {
-      "required": true
-    },
     "SESSION_SECRET": {
       "required": false
     },
-    "SF_CALLBACK_URL": {
+    "NODE_ENV": {
+      "required": false,
+      "value": "development"
+    },
+    "CLOUDAMQP_APIKEY": {
+      "required": false
+    },
+    "CLOUDAMQP_URL": {
+      "required": false
+    },
+    "DATABASE_URL": {
+      "required": false
+    },
+    "PAPERTRAIL_API_TOKEN": {
+      "required": false
+    },
+    "REDIS_URL": {
+      "required": false
+    },
+    "SF_PERSONACCOUNT_RECORDTYPEID": {
+      "required": false,
+      "value": "0121i000000gf14AAA"
+    },
+    "SF_USERNAME": {
+      "required": true
+    },
+    "SF_PASSWORD": {
       "required": true
     },
     "SF_CLIENT_ID": {
@@ -48,11 +53,11 @@
     "SF_CLIENT_SECRET": {
       "required": true
     },
-    "SF_PASSWORD": {
-      "required": true
+    "SF_CALLBACK_URL": {
+      "required": false
     },
-    "SF_USERNAME": {
-      "required": true
+    "SF_LOGIN_URL": {
+      "required": false
     }
   },
   "formation": {
