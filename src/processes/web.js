@@ -44,6 +44,17 @@ if(process.env.NODE_ENV === 'production') {
   })
 }
 
+// if not configuration yet show simple page
+app.use((req, res, next) => {
+  if (!process.env.CLOUDAMQP_URL || !process.env.REDIS_URL) {
+    // no real configuration
+    res.type("text");
+    res.send("Unable to find any of the required settings in the environment - will no start...");
+  } else {
+    next();
+  }
+})
+
 // configure routes
 require("../configure-routes.js")(app);
 
