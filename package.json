@@ -1,7 +1,7 @@
 {
-  "name": "sf-basecamp-2019",
+  "name": "trailblazer-treasure-hunt",
   "version": "1.0.0",
-  "description": "Trailblazer Treasure Hunt app for Salesforce Basecamp 2019",
+  "description": "Trailblazer Treasure Hunt app",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,7 +28,8 @@
   },
   "keywords": [
     "salesforce",
-    "basecamp"
+    "trailblazer",
+    "heroku"
   ],
   "author": "Mikkel Flindt Heisterberg (mheisterberg@salesforce.com)",
   "license": "MIT"

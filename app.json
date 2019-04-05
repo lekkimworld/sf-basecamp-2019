@@ -1,4 +1,7 @@
 {
+  "name": "trailblazer-treasure-hunt",
+  "description": "Trailblazer Treasure Hunt app showing how to build scalable apps that integrate with Salesforce Lightning Platform",
+  "repository": "https://github.com/lekkimworld/trailblazer-treasure-hunt",
   "addons": [
     "cloudamqp",
     "herokuconnect",
@@ -18,8 +21,11 @@
     "CLOUDAMQP_URL": {
       "required": true
     },
-    "NODE_ENV": {
+    "DATABASE_URL": {
       "required": true
+    },
+    "NODE_ENV": {
+      "required": false
     },
     "PAPERTRAIL_API_TOKEN": {
       "required": true
@@ -31,7 +37,7 @@
       "required": true
     },
     "SESSION_SECRET": {
-      "required": true
+      "required": false
     },
     "SF_CALLBACK_URL": {
       "required": true
@@ -57,7 +63,6 @@
       "quantity": 1
     }
   },
-  "name": "sf-basecamp-2019",
   "scripts": {
   },
   "stack": "heroku-18"
