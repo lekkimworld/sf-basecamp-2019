@@ -5,20 +5,27 @@ const terminateListener = require("../terminate-listener.js");
 const path = require("path");
 const express = require("express");
 const exphbs = require("express-handlebars");
-const redis = require("../configure-redis.js");
 const pool = require("../configure-db.js");
 const events = require("../configure-events.js");
-
-// create promisified redis client
-const redisClient = redis.promisifiedClient;
+const redis = process.env.REDIS_URL ? require("../configure-redis.js") : undefined;
 
 // create expres app, add static content and configure sessions
 const app = express();
 app.use(express.static(path.join(__dirname, '..', '..', 'public')));
-app.use(require("../configure-session.js")(redis.client));
+
+// configure sessions
+if (!redis) {
+  console.log("No REDIS_URL found in environment - cannot configure sessions...");
+} else {
+  app.use(require("../configure-session.js")(redis.client));
+}
 
 // configure authentication
-require("../configure-authentication.js").initialize(app);
+if (!process.env.SF_CLIENT_ID || process.env.SF_CLIENT_SECRET) {
+  console.log("No SF_CLIENT_ID or SF_CLIENT_SECRET found in environment - cannot configure auth...");
+} else {
+  require("../configure-authentication.js").initialize(app);
+}
 
 // configure handlebars for templating
 app.engine("handlebars", exphbs({
@@ -49,14 +56,14 @@ app.use((req, res, next) => {
   if (!process.env.CLOUDAMQP_URL || !process.env.REDIS_URL) {
     // no real configuration
     res.type("text");
-    res.send("Unable to find any of the required settings in the environment - will no start...");
+    res.send("Unable to find any of the required settings in the environment - will not start...");
   } else {
     next();
   }
 })
 
 // configure routes
-require("../configure-routes.js")(app);
+if (redis) require("../configure-routes.js")(app);
 
 // add error handler
 app.use((err, req, res, next) => {
@@ -73,8 +80,8 @@ console.log(`Listening on port ${port}`);
 // setup termination listener
 terminateListener(() => {
 	console.log("Terminating services");
-    pool.end();
-    redisClient.end();
-    events.close();
+  pool.end();
+  if (redis) redis.promisifiedClient.end();
+  if (events && events.close) events.close();
 	console.log("Terminated services");
 });
