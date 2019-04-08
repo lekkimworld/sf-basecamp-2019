@@ -13,7 +13,7 @@ const pool = require("../configure-db.js");
 cache.initialize();
 
 // write to database
-const writePayloadToDatabase = (payload) => {
+const writePayloadToDatabase = (payload, questionnaire) => {
     // if no database connection simply log and resolve
     if (!process.env.DATABASE_URL) {
         console.log("No DATABASE_URL found in environment so cannot write to database");
@@ -138,7 +138,7 @@ events.queues.writesf.subscribe((payload, callback) => {
         console.log('-------');
 
         // write to database if we need to
-        writePayloadToDatabase(payload).then(() => {
+        writePayloadToDatabase(payload, questionnaire).then(() => {
             // callback and acknowledge the processing of the msg
             callback();
 
