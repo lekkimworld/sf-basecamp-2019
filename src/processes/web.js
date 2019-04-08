@@ -21,7 +21,7 @@ if (!redis) {
 }
 
 // configure authentication
-if (!process.env.SF_CLIENT_ID || process.env.SF_CLIENT_SECRET) {
+if (!process.env.SF_CLIENT_ID || !process.env.SF_CLIENT_SECRET) {
   console.log("No SF_CLIENT_ID or SF_CLIENT_SECRET found in environment - cannot configure auth...");
 } else {
   require("../configure-authentication.js").initialize(app);
