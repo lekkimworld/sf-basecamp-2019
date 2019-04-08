@@ -90,7 +90,16 @@ const loadQuestionnaireData = (options = {}) => {
                 
                 // we don't - create
                 const idx = questionnaire.questionCount + 1;
-                const imgRefId = question.Image__c ? question.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i)[1] : undefined;
+                let imgRefId;
+                let imgUrl;
+                if (question.Image__c) {
+                    let regex = question.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i);
+                    if (regex) {
+                        imgRefId = regex[1];
+                    } else {
+                        imgUrl = question.Image__c.match(/<img src="([-.&=;/:?-a-z0-9]+)"/i)[1];
+                    }
+                }
                 q = {
                     "index": idx,
                     "id": question.Id,
@@ -98,6 +107,7 @@ const loadQuestionnaireData = (options = {}) => {
                     "text": question.Text__c,
                     "sorting": question.Sorting__c,
                     "imageRefId": imgRefId,
+                    "image": imgUrl,
                     "answers": []
                 }
                 questionnaire.questionCount = idx;
