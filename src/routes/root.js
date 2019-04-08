@@ -53,9 +53,9 @@ const getStep2 = (state, ctx, questionnaire, templateCtx, req, res) => {
     templateCtx.questions = questionnaire.questions;
     templateCtx.title = questionnaire.questionnaireTitle;
     templateCtx.text = questionnaire.questionnaireText || `<p>
-        Below you'll see a list of questions. For each question there is a number of potential answers and a 
-        map showing the location of the actual answers throughout the venue. For each question go to the 
-        spot on the map, decide what's the right answer and answer the question here in the app.
+        Below you'll see a list of questions. For each question there is a number of 
+        potential answers, decide what's the right answer and answer the question here in the app. Click 
+        Next when you are done.
     </p>
     <p>
         Happy trails!
