@@ -1,0 +1,127 @@
+{
+    "mappings": [
+        {
+            "object_name": "Account",
+            "config": {
+                "indexes": {
+                    "SystemModstamp": {
+                        "unique": false
+                    },
+                    "External_ID__c": {
+                        "unique": true
+                    },
+                    "Id": {
+                        "unique": true
+                    }
+                },
+                "sf_max_daily_api_calls": 30000,
+                "access": "read_write",
+                "upsert_field": "External_ID__c",
+                "applied_at": "2019-04-08T07:18:48.432250Z",
+                "sf_polling_seconds": 600,
+                "sf_notify_enabled": true,
+                "fields": {
+                    "Company_Name__pc": {},
+                    "LastName": {},
+                    "PersonHasOptedOutOfEmail": {},
+                    "RecordTypeId": {},
+                    "PersonEmail": {},
+                    "Name": {},
+                    "IsDeleted": {},
+                    "SystemModstamp": {},
+                    "External_ID__c": {},
+                    "CreatedDate": {},
+                    "Id": {},
+                    "FirstName": {}
+                }
+            }
+        },
+        {
+            "object_name": "Basecamp_Questionnaire_Answer__c",
+            "config": {
+                "access": "read_write",
+                "sf_notify_enabled": true,
+                "sf_polling_seconds": 600,
+                "sf_max_daily_api_calls": 30000,
+                "fields": {
+                    "Answer__c": {},
+                    "Questionnaire_Response__c": {},
+                    "Questionnaire_Response__r__External_ID__c": {},
+                    "Name": {},
+                    "IsDeleted": {},
+                    "SystemModstamp": {},
+                    "External_ID__c": {},
+                    "CreatedDate": {},
+                    "Correct__c": {},
+                    "Id": {},
+                    "Question__c": {}
+                },
+                "indexes": {
+                    "Questionnaire_Response__c": {
+                        "unique": false
+                    },
+                    "SystemModstamp": {
+                        "unique": false
+                    },
+                    "External_ID__c": {
+                        "unique": true
+                    },
+                    "Id": {
+                        "unique": true
+                    }
+                },
+                "upsert_field": "External_ID__c"
+            }
+        },
+        {
+            "object_name": "Basecamp_Questionnaire_Response__c",
+            "config": {
+                "access": "read_write",
+                "sf_notify_enabled": true,
+                "sf_polling_seconds": 600,
+                "sf_max_daily_api_calls": 30000,
+                "fields": {
+                    "Questionnaire__c": {},
+                    "Version__c": {},
+                    "Name": {},
+                    "IsDeleted": {},
+                    "SystemModstamp": {},
+                    "External_ID__c": {},
+                    "CreatedDate": {},
+                    "Account__c": {},
+                    "Account__r__External_ID__c": {},
+                    "Id": {}
+                },
+                "indexes": {
+                    "SystemModstamp": {
+                        "unique": false
+                    },
+                    "External_ID__c": {
+                        "unique": true
+                    },
+                    "Account__c": {
+                        "unique": false
+                    },
+                    "Id": {
+                        "unique": true
+                    }
+                },
+                "upsert_field": "External_ID__c"
+            }
+        }
+    ],
+    "connection": {
+        "app_name": "intense-sea-44185",
+        "organization_id": "00D1i000000U3x5EAC",
+        "exported_at": "2019-04-08T07:40:56.824021+00:00",
+        "features": {
+            "poll_db_no_merge": true,
+            "poll_external_ids": false,
+            "rest_count_only": false
+        },
+        "api_version": "45.0",
+        "name": "",
+        "logplex_log_enabled": false
+    },
+    "version": 1
+}
