@@ -3,6 +3,8 @@ Trailblazer Treasure Hunt app showing how to build scalable apps that integrate 
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
+![Walk-thru](./docs/images/walk-thru.gif)
+
 ## Add-ons ##
 The add-ons used are listed in the `app.json` but is here as well. It's fine to use the free tier for all add-ons.
 * CloudAMQP (tier: "lemur")
