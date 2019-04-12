@@ -31,8 +31,8 @@ There is a version of the demo where I go from creating and showing the app in S
 The script takes the following parameters:
 
 1. The app name in Staging
-2. The app name for Production
-3. The name of the pipeline to create and add the apps to
+2. The app name for Production (will be created)
+3. The name of the pipeline to create and add the apps to (will be created)
 4. The team name if any
 
 **Example**
@@ -43,13 +43,13 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
 ## Requirements ##
 * Heroku CLI
 * Heroku Connect plugin (`heroku plugins:install heroku-connect-plugin`)
-* jq (https://stedolan.github.io/jq/)
+* [jq](https://stedolan.github.io/jq/) (only required for the `promote_prod.sh` script)
 
 # Demo #
 ## Prep ##
 * Open and log into org
 * Open and log into Heroku to Personal apps
-* Open Github to repo (https://github.com/lekkimworld/trailblazer-treasure-hunt)
+* Open Github to repo ([github.com/lekkimworld/trailblazer-treasure-hunt](https://github.com/lekkimworld/trailblazer-treasure-hunt))
 
 ## Salesforce Demo ##
 * Open Salesforce and show Questionnaire, Version, Questions and Answers
@@ -84,3 +84,29 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
     * Show how it’s done using the UI
     * Too error prone for demo - use script (`scripts/environment2.sh`)
 * Show scaling the app
+
+# Environment variables #
+If none of the below variables are set the application will start but just shown text to the user indicating that configuration is missing.
+
+Once `CLOUDAMQP_APIKEY`, `CLOUDAMQP_URL`, `REDIS_URL`, `SF_USERNAME`, `SF_PASSWORD`, `SF_CLIENT_ID` and `SF_CLIENT_SECRET` is set the app is functioning but will not write back to Salesforce,
+
+For writing back to Salesforce `DATABASE_URL` is required (and Heroku Connect should be configured). If `DATABASE_URL` is not set we just log the completion of the flow to the console / Papertrail.
+
+| Name | Purpose |
+| ------------- |---------------|
+| SESSION_SECRET      | Secret to use when generating session ID's. If not set a value will be generated but this will cause issues for the client if multiple dynos are spun up for the web process |
+| SESSION_TTL | Session lifetime in hours (default is 2) |
+| NODE_ENV      | What environment are we running in. If set to "production" all requests are ensured over TLS. If set to "demo" the personal info form will be prefilled with data and the "lottery name" shown on the final confirmation page  |
+| SF_PERSONACCOUNT_RECORDTYPEID | Should hold the ID of the PersonAccount record type to use. The value is used through Heroku Connect when writing back to Salesforce using Heroku Connect to create accounts as PersonAccounts |
+| SF_USERNAME | Username to use when logging into Salesforce to get data or listen for Platform Events |
+| SF_PASSWORD | Username to use when logging into Salesforce to get data or listen for Platform Events |
+| SF_CLIENT_ID | Client ID for Salesforce OAuth for connection when logging into Salesforce to get data or listen for Platform Events |
+| SF_CLIENT_SECRET | Client Secret for Salesforce OAuth for connection when logging into Salesforce to get data or listen for Platform Events |
+| SF_CALLBACK_URL | If specified this will cause the /admin/events endpoint of the application to require authentication. This is one by redirecting the user to the Salesforce org for authentication |
+| SF_LOGIN_URL | If not set this defaults to login.salesforce.com but may be set to test.salesforce.com or similar to use with a sandbox |
+| SF_APIVERSION | Salesforce API version to use (defaults to v44.0) |
+| CLOUDAMQP_APIKEY | Added by CloudAMQP add-on |
+| CLOUDAMQP_URL | Added by CloudAMQP add-on |
+| DATABASE_URL | Added by Heroku Postgres add-on |
+| PAPERTRAIL_API_TOKEN | Added by Papertrail add-on |
+| REDIS_URL | Added by Heroku Redis add-on |
