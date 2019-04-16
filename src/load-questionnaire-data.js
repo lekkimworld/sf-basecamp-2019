@@ -90,24 +90,13 @@ const loadQuestionnaireData = (options = {}) => {
                 
                 // we don't - create
                 const idx = questionnaire.questionCount + 1;
-                let imgRefId;
-                let imgUrl;
-                if (question.Image__c) {
-                    let regex = question.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i);
-                    if (regex) {
-                        imgRefId = regex[1];
-                    } else {
-                        imgUrl = question.Image__c.match(/<img src="([-.&=;/:?-a-z0-9]+)"/i)[1];
-                    }
-                }
                 q = {
                     "index": idx,
                     "id": question.Id,
                     "correctAnswerId": question.Answer__c,
                     "text": question.Text__c,
                     "sorting": question.Sorting__c,
-                    "imageRefId": imgRefId,
-                    "image": imgUrl,
+                    "image": undefined,
                     "answers": []
                 }
                 questionnaire.questionCount = idx;
@@ -115,31 +104,30 @@ const loadQuestionnaireData = (options = {}) => {
                 // add to array
                 questionnaire.questions.push(q);
 
-                if (imgRefId) {
-                    const hostname = ctx.sf_credentials.instance_url;
-                    const accesstoken = ctx.sf_credentials.access_token;
-                    const url = `${hostname}/services/data/${SF_APIVERSION}/sobjects/Basecamp_Question__c/${q.id}/richTextImageFields/Image__c/${q.imageRefId}`;
-                    q.imagePromise = fetch(url, {"headers": {
-                        "Authorization": `Bearer ${accesstoken}`
-                    }}).then(res => res.buffer()).then(buf => {
-                        const b64 = buf.toString('base64');
-                        return Promise.resolve({
-                            "base64": b64,
-                            "id": q.id
-                        });
-                    })
-                } else if (imgUrl) {
-                    const accesstoken = ctx.sf_credentials.access_token;
-                    q.imagePromise = fetch(imgUrl, {"headers": {
-                        "Authorization": `Bearer ${accesstoken}`
-                    }}).then(res => res.buffer()).then(buf => {
-                        const b64 = buf.toString('base64');
-                        return Promise.resolve({
-                            "base64": b64,
-                            "id": q.id
-                        });
-                    })
-                }
+                // we need to figure out if there is an image attached for the question
+                const hostname = ctx.sf_credentials.instance_url;
+                const accesstoken = ctx.sf_credentials.access_token;
+                const headers = {"headers": {
+                    "Authorization": `Bearer ${accesstoken}`
+                }};
+                const url = `${hostname}/services/data/${SF_APIVERSION}/sobjects/Basecamp_Question__c/${q.id}`;
+                q.imagePromise = fetch(url, headers).then(resp => resp.json()).then(data => {
+                    // get image refid if any
+                    let regex = data.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i);
+                    if (regex) {
+                        let imgRefId = regex[1];
+                        if (imgRefId) {
+                            return fetch(`${url}/richTextImageFields/Image__c/${imgRefId}`, headers).then(resp => resp.buffer()).then(buf => {
+                                const b64 = buf.toString('base64');
+                                return Promise.resolve({
+                                    "base64": b64,
+                                    "id": q.id
+                                });
+                            })
+                        }
+                    }
+                    return Promise.resolve();
+                })
 
                 // return 
                 return q;
@@ -174,6 +162,7 @@ const loadQuestionnaireData = (options = {}) => {
             // find question and add image data
             Object.values(ctx.questionnaires).forEach(questionnaire => {
                 const promise = dataArr[i];
+                if (!promise) return;
                 const q = questionnaire.questions.filter(q => q.id === dataArr[i].id);
                 if (q && q.length) q[0].image = `data:image/png;base64,${dataArr[i].base64}`;
             })
