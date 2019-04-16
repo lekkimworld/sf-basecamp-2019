@@ -4,6 +4,7 @@ require('dotenv').config();
 const terminateListener = require("../terminate-listener.js");
 const path = require("path");
 const express = require("express");
+const Handlebars = require("handlebars");
 const exphbs = require("express-handlebars");
 const pool = require("../configure-db.js");
 const events = require("../configure-events.js");
@@ -29,20 +30,20 @@ if (!process.env.SF_CLIENT_ID || !process.env.SF_CLIENT_SECRET) {
 
 // configure handlebars for templating
 app.engine("handlebars", exphbs({
-    "defaultLayout": "questionnaire",
-    "helpers": {
-        "json": function (context) {
-            return JSON.stringify(context);
-        },
-        "isDisabled": function (context) {
-          return process.env.NODE_ENV === "demo" ? "true" : "false";
-        }
-    }
+    "defaultLayout": "questionnaire"
 }))
+Handlebars.registerHelper("inputText", (id, value, placeholder) => {
+  let disabled = process.env.NODE_ENV === "demo" ? true : false;
+  return `<input type="text" ${disabled ? "disabled=\"disabled\" readonly=\"readonly\"": ""} value="${value ? value : ""}" id="${id}" placeholder="${placeholder}" autocomplete="new-password" autocorrect="off" autocapitalize="on" spellcheck="false" class="m-top--small"></input>`;
+})
+Handlebars.registerHelper("inputCheckbox", (id, value) => {
+  let disabled = process.env.NODE_ENV === "demo" ? true : false;
+  return `<input type="checkbox" id="${id}" name="${id}" ${disabled ? "disabled=\"disabled\" readonly=\"readonly\"": ""} ${value ? "checked" : ""}>`
+})
 app.set('view engine', 'handlebars')
 
 // send to tls is production
-if(process.env.NODE_ENV === 'production') {
+if(process.env.ENFORCE_TLS) {
   app.use((req, res, next) => {
     if (req.header('x-forwarded-proto') !== 'https')
       res.redirect(`https://${req.header('host')}${req.url}`);
