@@ -128,6 +128,17 @@ const loadQuestionnaireData = (options = {}) => {
                             "id": q.id
                         });
                     })
+                } else if (imgUrl) {
+                    const accesstoken = ctx.sf_credentials.access_token;
+                    q.imagePromise = fetch(imgUrl, {"headers": {
+                        "Authorization": `Bearer ${accesstoken}`
+                    }}).then(res => res.buffer()).then(buf => {
+                        const b64 = buf.toString('base64');
+                        return Promise.resolve({
+                            "base64": b64,
+                            "id": q.id
+                        });
+                    })
                 }
 
                 // return 

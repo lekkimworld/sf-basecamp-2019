@@ -97,6 +97,7 @@ For writing back to Salesforce `DATABASE_URL` is required (and Heroku Connect sh
 | Name | Purpose |
 | ------------- |---------------|
 | SESSION_SECRET      | Secret to use when generating session ID's. If not set a value will be generated but this will cause issues for the client if multiple dynos are spun up for the web process |
+| ENFORCE_TLS | Set to 1 to make sure all requests are redirected to TLS |
 | SESSION_TTL | Session lifetime in hours (default is 2) |
 | NODE_ENV      | What environment are we running in. If set to "production" all requests are ensured over TLS. If set to "demo" the personal info form will be prefilled with data and the "lottery name" shown on the final confirmation page  |
 | SF_PERSONACCOUNT_RECORDTYPEID | Should hold the ID of the PersonAccount record type to use. The value is used through Heroku Connect when writing back to Salesforce using Heroku Connect to create accounts as PersonAccounts |
