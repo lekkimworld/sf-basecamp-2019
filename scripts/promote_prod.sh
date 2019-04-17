@@ -10,6 +10,11 @@ else
     echo "Sourced $ENVFILE"
 fi
 
+# use hardcoded SESSION_SECRET if not set
+if [ -z "$SESSION_SECRET" ]; then
+    SESSION_SECRET='93843984hdfnknkf3874isdhdss'
+fi
+
 # get arguments
 APP_STAGING=$1
 APP_PROD=$2
