@@ -71,7 +71,7 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
     * CloudAMPQ
 * Configuration of the app is done through environment variables as it allows us to have different configuration for test, staging, production and so on
     * Show config variables
-    * Use script and scale the backend process (`scripts/environment1.sh`)
+    * Use script and scale the backend process (`scripts/configure1.sh`)
     * App is now working
 * Log and traceability
     * Open log in web ui (I can also tail the log from the CLI)
@@ -84,7 +84,7 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
     * Create Connection to Salesforce
     * Create Mappings
     * Show how it’s done using the UI
-    * Too error prone for demo - use script (`scripts/environment2.sh`)
+    * Too error prone for demo - use script (`scripts/configure2.sh`)
 * Show scaling the app
 
 # Environment variables #
