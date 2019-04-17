@@ -1,5 +1,15 @@
 #!/bin/sh
 
+ENVFILE=`pwd`/.env-scripts
+echo "Looking for $ENVFILE"
+if [ ! -f $ENVFILE ]; then
+    echo "$ENVFILE file does not exist - please create it..."
+    exit 1
+else
+    source $ENVFILE
+    echo "Sourced $ENVFILE"
+fi
+
 # get arguments
 APP_STAGING=$1
 APP_PROD=$2
@@ -48,15 +58,15 @@ heroku apps:create --region eu $TEAM_ARG $APP_PROD
 heroku pipelines:add --app $APP_PROD --stage=production $PIPELINE
 
 # set config in environment
-heroku config:set SF_CLIENT_ID="3MVG9T46ZAw5GTfXfFJkrItF4_aixowhGdQVAO4D71HCMjKwjp4k0gpbPpgnVlQRCuUp3cHnkc6WqFzKorjz4" \
- SF_CLIENT_SECRET="971B6A4BD70A1F34A61E77DCADF3C78E363E1638A9BCA10B55038A1CAF318A5F" \
- SF_PASSWORD='8RectbgVS$*kM74m5vcN' \
- SF_USERNAME="admin@sf-basecamp.com" \
+heroku config:set SF_CLIENT_ID="${SF_CLIENT_ID}" \
+ SF_CLIENT_SECRET="${SF_CLIENT_SECRET}" \
+ SF_PASSWORD="${SF_PASSWORD}" \
+ SF_USERNAME="${SF_USERNAME}" \
  SF_PERSONACCOUNT_RECORDTYPEID="0121i000000gf14AAA" \
  SF_CALLBACK_URL="https://$APP_PROD.herokuapp.com/oauth/callback" \
+ SESSION_SECRET="${SESSION_SECRET}" \
  NODE_ENV="demo" \
- SESSION_SECRET="kljashd83eihdn823ueqhjads" \
- --app $APP_PROD
+ --app $APP_PROD > /dev/null
 
 # provision add-ons
 heroku addons:create cloudamqp:lemur --app $APP_PROD

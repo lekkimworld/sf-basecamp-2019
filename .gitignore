@@ -4,3 +4,4 @@ node_modules
 *.rdb
 
 recreate_local_db.sh
+scripts/.env-scripts

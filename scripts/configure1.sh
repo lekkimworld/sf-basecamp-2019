@@ -1,5 +1,21 @@
 #!/bin/sh
 
+ENVFILE=`pwd`/.env-scripts
+echo "Looking for $ENVFILE"
+if [ ! -f $ENVFILE ]; then
+    echo "$ENVFILE file does not exist - please create it..."
+    exit 1
+else
+    source $ENVFILE
+    echo "Sourced $ENVFILE"
+fi
+
+# use hardcoded SESSION_SECRET if not set
+if [ -z "$SESSION_SECRET" ]; then
+    SESSION_SECRET='93843984hdfnknkf3874isdhdss'
+fi
+
+# read app name
 APP_STAGING=$1
 
 # make sure staging appname does exist
@@ -17,15 +33,15 @@ if [ -z "$OUTPUT" ]; then
 fi
 
 # set config
-heroku config:set SF_CLIENT_ID="3MVG9T46ZAw5GTfXfFJkr...lQRCuUp3cHnkc6WqFzKorjz4" \
- SF_CLIENT_SECRET="971B6A4BD70A1...CA10B55038A1CAF318A5F" \
- SF_PASSWORD='8R...cN' \
- SF_USERNAME="admin@this.is.my.username.com" \
+heroku config:set SF_CLIENT_ID="${SF_CLIENT_ID}" \
+ SF_CLIENT_SECRET="${SF_CLIENT_SECRET}" \
+ SF_PASSWORD="${SF_PASSWORD}" \
+ SF_USERNAME="${SF_USERNAME}" \
  SF_PERSONACCOUNT_RECORDTYPEID="0121i000000gf14AAA" \
  SF_CALLBACK_URL="https://$APP_STAGING.herokuapp.com/oauth/callback" \
- SESSION_SECRET="298...hndd" \
+ SESSION_SECRET="${SESSION_SECRET}" \
  NODE_ENV=demo \
- --app $APP_STAGING
+ --app $APP_STAGING > /dev/null
 
 # scale backend process
  heroku ps:scale backend=1:Hobby --app $APP_STAGING

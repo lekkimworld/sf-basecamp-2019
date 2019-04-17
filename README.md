@@ -50,8 +50,19 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
 # Demo #
 ## Prep ##
 * Open and log into org
+* Open Setup in org
 * Open and log into Heroku to Personal apps
 * Open Github to repo ([github.com/lekkimworld/trailblazer-treasure-hunt](https://github.com/lekkimworld/trailblazer-treasure-hunt))
+* Clone Github repo and create configuration for scripts
+    * `cd /tmp`
+    * `git clone https://github.com/lekkimworld/trailblazer-treasure-hunt.git`
+    * `cd trailblazer-treasure-hunt`
+    * `cd scripts`
+    * Create `.env-scripts` file with the following key-value pairs
+        * SF_USERNAME='[username to Salesforce org]'
+        * SF_PASSWORD='[password for above user]'
+        * SF_CLIENT_ID='[client id from Connected App in Salesforce]'
+        * SF_CLIENT_SECRET='[client secret from Connected App in Salesforce]'
 
 ## Salesforce Demo ##
 * Open Salesforce and show Questionnaire, Version, Questions and Answers
