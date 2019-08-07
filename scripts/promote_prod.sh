@@ -21,6 +21,12 @@ APP_PROD=$2
 PIPELINE=$3
 TEAM_NAME=$4
 
+# echo syntax
+if [ $APP_STAGING == "--help" ]; then
+	echo "Syntax is: promote_prod.sh <APP_STAGING> <APP_PROD> <PIPELINE> <TEAM_NAME optional>"
+	exit 1
+fi
+
 # echo arguments
 echo "Staging    : $APP_STAGING"
 echo "Production : $APP_PROD"
@@ -67,7 +73,7 @@ heroku config:set SF_CLIENT_ID="${SF_CLIENT_ID}" \
  SF_CLIENT_SECRET="${SF_CLIENT_SECRET}" \
  SF_PASSWORD="${SF_PASSWORD}" \
  SF_USERNAME="${SF_USERNAME}" \
- SF_PERSONACCOUNT_RECORDTYPEID="0121i000000gf14AAA" \
+ SF_PERSONACCOUNT_RECORDTYPEID="${SF_PERSONACCOUNT_RECORDTYPEID}" \
  SF_CALLBACK_URL="https://$APP_PROD.herokuapp.com/oauth/callback" \
  SESSION_SECRET="${SESSION_SECRET}" \
  NODE_ENV="demo" \

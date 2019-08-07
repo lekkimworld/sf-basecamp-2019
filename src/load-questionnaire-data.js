@@ -2,7 +2,7 @@ const fetch = require("node-fetch");
 const sfauth = require("./salesforce-oauth.js");
 const redisClient = require("./configure-redis.js").promisifiedClient;
 
-const SF_APIVERSION = process.env.SF_APIVERSION || "v44.0";
+const SF_APIVERSION = process.env.SF_APIVERSION || "v43.0";
 const DEFAULT_STATUSES = ["Active"];
 const QUERY_BASE =`/services/data/${SF_APIVERSION}/query?q=select+Id,Name,Text__c,Sorting__c,Question__r.Id,Question__r.Text__c,Question__r.Answer__c,Question__r.Version__r.Name,Question__r.Version__r.Id,Question__r.Version__r.Questionnaire__r.Context__c,Question__r.Version__r.Questionnaire__r.Id,+Question__r.Name,Question__r.Version__r.Greeting_Title__c,Question__r.Version__r.Greeting_Text__c,Question__r.Version__r.Questionnaire_Title__c,Question__r.Version__r.Questionnaire_Text__c,Question__r.Version__r.Confirmation_Title__c,Question__r.Version__r.Confirmation_Text__c,Question__r.Version__r.Enforce_Correct_Answers__c,Question__r.Image__c,Question__r.Sorting__c+from+Basecamp_Answer__c`;
 const ORDER_BY=`+ORDER+BY+Question__r.Sorting__c+ASC,+Sorting__c+ASC`;
@@ -113,17 +113,19 @@ const loadQuestionnaireData = (options = {}) => {
                 const url = `${hostname}/services/data/${SF_APIVERSION}/sobjects/Basecamp_Question__c/${q.id}`;
                 q.imagePromise = fetch(url, headers).then(resp => resp.json()).then(data => {
                     // get image refid if any
-                    let regex = data.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i);
-                    if (regex) {
-                        let imgRefId = regex[1];
-                        if (imgRefId) {
-                            return fetch(`${url}/richTextImageFields/Image__c/${imgRefId}`, headers).then(resp => resp.buffer()).then(buf => {
-                                const b64 = buf.toString('base64');
-                                return Promise.resolve({
-                                    "base64": b64,
-                                    "id": q.id
-                                });
-                            })
+                    if (data.Image__c) {
+                        let regex = data.Image__c.match(/^.*refid=([a-z0-9]{15}).*$/i);
+                        if (regex) {
+                            let imgRefId = regex[1];
+                            if (imgRefId) {
+                                return fetch(`${url}/richTextImageFields/Image__c/${imgRefId}`, headers).then(resp => resp.buffer()).then(buf => {
+                                    const b64 = buf.toString('base64');
+                                    return Promise.resolve({
+                                        "base64": b64,
+                                        "id": q.id
+                                    });
+                                })
+                            }
                         }
                     }
                     return Promise.resolve();

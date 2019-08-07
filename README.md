@@ -96,7 +96,9 @@ $ ./promote_prod.sh my-staging-app my-prod-app my-pipe my-team
     * Create Mappings
     * Show how it’s done using the UI
     * Too error prone for demo - use script (`scripts/configure2.sh`)
-* Show scaling the app
+* Show adding the app to a pipeline
+    * Show pipeline
+    * We would have to do it all again but we can again automate with a script (`scripts/promote_prod.sh --help`)
 
 # Environment variables #
 If none of the below variables are set the application will start but just shown text to the user indicating that configuration is missing.
