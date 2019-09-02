@@ -12,7 +12,7 @@ fi
 
 # use hardcoded SESSION_SECRET if not set
 if [ -z "$SESSION_SECRET" ]; then
-    SESSION_SECRET='93843984hdfnknkf3874isdhdss'
+    SESSION_SECRET=`date +%s`
 fi
 
 # get arguments
