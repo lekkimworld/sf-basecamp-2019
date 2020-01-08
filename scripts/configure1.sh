@@ -43,5 +43,10 @@ heroku config:set SF_CLIENT_ID="${SF_CLIENT_ID}" \
  NODE_ENV=demo \
  --app $APP_STAGING > /dev/null
 
+ if [ ! -z "$SF_LOGIN_URL" ]; then
+    heroku config:set SF_LOGIN_URL="${SF_LOGIN_URL}" \
+ --app $APP_STAGING > /dev/null
+fi
+
 # scale backend process
  heroku ps:scale backend=1:Hobby --app $APP_STAGING

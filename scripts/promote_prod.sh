@@ -46,7 +46,7 @@ if [ -z "$OUTPUT" ]; then
 fi
 
 # make sure pipeline name does NOT exist
-OUTPUT=`heroku pipelines:info --json $PIPELINE | jq -r ".id"`
+OUTPUT=`heroku pipelines:info $PIPELINE --json | jq -r ".pipeline.id"`
 if [ ! -z "$OUTPUT" ]; then
 	echo "Pipeline ($PIPELINE) does exist - please use another!"
 	exit 1
